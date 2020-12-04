@@ -7,8 +7,9 @@ using PathologicalGames;
 
 public class Zombie : Character
 {
+    public int this_health;
     Animator anim;
-    bool dead;
+    public bool dead;
     float Timer;
     Vector3 goal;
     NavMeshAgent agent;
@@ -18,6 +19,7 @@ public class Zombie : Character
 
     protected override void Initialize()
     {
+        Debug.Log("Initialized!");
         setHealth(100);
         dead = false;
         removeArrows();
@@ -26,7 +28,6 @@ public class Zombie : Character
         spawnManager = FindObjectOfType<SpawnManager>();
         agent = GetComponent<NavMeshAgent>();
         fire = GetComponent<FireSource>();
-        Debug.Log("Before reset: " + this + " Animation Booleans: " + anim.GetBool("FireDeath") + anim.GetBool("ProjectileDeath") + anim.GetBool("OtherWalk"));
         if (!anim.isInitialized)
         {
             anim.Rebind();
@@ -36,7 +37,7 @@ public class Zombie : Character
         agent.destination = goal;
         agent.isStopped = false;
         //ResetAnimations();
-        if (Random.Range(0, 2) > 0)
+        if (Random.Range(0, 2) > 2)
         {
             anim.SetBool("OtherWalk", true);
         }
@@ -44,8 +45,6 @@ public class Zombie : Character
         {
             anim.SetBool("OtherWalk", false);
         }
-
-        Debug.Log("Spawned " + this + "Animation Booleans: " + anim.GetBool("FireDeath") + anim.GetBool("ProjectileDeath") + anim.GetBool("OtherWalk"));
     }      
 
     void ResetAnimations()
@@ -75,8 +74,9 @@ public class Zombie : Character
 
     protected override void OnUpdate()
     {
+        
         agent.destination = FindObjectOfType<Player>().gameObject.transform.position;
-        if (fire.isBurning)
+        if (fire.isBurning && getHealth() >= 1)
         {
             setHealth(-1);
         }
@@ -96,6 +96,7 @@ public class Zombie : Character
             spawnManager.DecrementLiveZombies();
             dead = true;
         }
+        this_health = getHealth();
     }
 
     private void OnCollisionEnter(Collision collision)

@@ -59,8 +59,15 @@ public class SpawnManager : MonoBehaviour
     void SpawnZombie()
     {
         int idx = Random.Range(0, SpawnPoints.Length-1);
-        Transform myInstance = PoolManager.Pools["Enemies"].Spawn(enemy, SpawnPoints[idx], Quaternion.identity);
-        //Debug.Log("Zombie spawned at " + myInstance);
+        int idx2 = idx - 1;
+        if (idx2 < 0)
+        {
+            idx2 = SpawnPoints.Length - 1;
+        }
+
+        float spawn_x = Random.Range(SpawnPoints[idx].x, SpawnPoints[idx2].x);
+        float spawn_z = Random.Range(SpawnPoints[idx].z, SpawnPoints[idx2].z);
+        Transform myInstance = PoolManager.Pools["Enemies"].Spawn(enemy, new Vector3(spawn_x, SpawnPoints[0].y, spawn_z), Quaternion.identity);
         num_Spawned++;
         aliveNow++;
     }
