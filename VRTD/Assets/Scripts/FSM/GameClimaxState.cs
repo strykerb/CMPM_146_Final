@@ -6,7 +6,7 @@ public class GameClimaxState : GameBaseState
 {
     public override void EnterState(GameController controller)
     {
-        MaxTimeInState = 10.0f;
+        MaxTimeInState = 5.0f;
     }
 
     public override void Update(GameController controller)

@@ -76,4 +76,10 @@ public class SpawnManager : MonoBehaviour
     {
         aliveNow--;
     }
+
+    // Get remaining enemies for cooldown transition
+    public int GetNumAlive()
+    {
+        return aliveNow;
+    }
 }

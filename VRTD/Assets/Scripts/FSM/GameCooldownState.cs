@@ -6,13 +6,15 @@ public class GameCooldownState : GameBaseState
 {
     public override void EnterState(GameController controller)
     {
-        MaxTimeInState = 60.0f;
+        KillsLeft = controller.Spawner.GetNumAlive();
     }
 
     public override void Update(GameController controller)
     {
         Debug.Log("Cooling down.");
-        if (CheckGoalReached(controller.RestingHR, controller.CurrentHR, controller.TimeInState))
+        // Update kills remaining
+        KillsLeft = controller.Spawner.GetNumAlive();
+        if (KillsLeft <= 0)
         {
             controller.TransitionToState(controller.RestState);
         }
