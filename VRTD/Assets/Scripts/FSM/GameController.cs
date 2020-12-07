@@ -1,5 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using UnityEngine;
 
 /*
@@ -21,6 +24,9 @@ public class GameController : MonoBehaviour
     public GameClimaxState ClimaxState = new GameClimaxState();
     public GameCooldownState CooldownState = new GameCooldownState();
 
+    // Path to Heart Rate Data File
+    string path = Path.Combine($@"{Directory.GetCurrentDirectory()}", @"Assets\HRData\data.txt");
+
     // Start is called before the first frame update
     void Start()
     {
@@ -31,6 +37,23 @@ public class GameController : MonoBehaviour
     void Update()
     {
         TimeInState += Time.deltaTime;
+        int read_hr = -1;
+        
+        try
+        {
+            read_hr = Int32.Parse(File.ReadLines(path).Last());
+        }
+        catch (IOException)
+        {
+            // Data File was open by ShimmerAPI, pass
+        }
+
+        Debug.Log("Heart Rate: " + read_hr + " BPM");
+        if (read_hr != -1)
+        {
+            CurrentHR = read_hr;
+        }
+
         CurrentState.Update(this);
     }
 
