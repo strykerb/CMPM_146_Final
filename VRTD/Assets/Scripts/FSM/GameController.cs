@@ -14,6 +14,15 @@ public class GameController : MonoBehaviour
     public GameBaseState CurrentState; // Current game state in FSM
     public SpawnManager Spawner;        // Enemy spawn manager to manipulate based on state
 
+    // What kind of sensor data are we using for the controller?
+    public enum SensorMode
+    {
+        Manual, // Dev input for testing
+        Simple, // ECG data only
+        Complex // ECG + GSR (NYI)
+    };
+    public SensorMode CurrentSensorMode = SensorMode.Manual;
+
     public float TimeInState;  // Time since last state transition.
     public float RestingHR;    // Store player's approx resting heartrate.
     public float CurrentHR;    // Store player's current heartrate.
@@ -37,21 +46,26 @@ public class GameController : MonoBehaviour
     void Update()
     {
         TimeInState += Time.deltaTime;
-        int read_hr = -1;
-        
-        try
-        {
-            read_hr = Int32.Parse(File.ReadLines(path).Last());
-        }
-        catch (IOException)
-        {
-            // Data File was open by ShimmerAPI, pass
-        }
 
-        Debug.Log("Heart Rate: " + read_hr + " BPM");
-        if (read_hr != -1)
+        // Read sensor data when not in manual mode
+        if (CurrentSensorMode != SensorMode.Manual)
         {
-            CurrentHR = read_hr;
+            int read_hr = -1;
+
+            try
+            {
+                read_hr = Int32.Parse(File.ReadLines(path).Last());
+            }
+            catch (IOException)
+            {
+                // Data File was open by ShimmerAPI, pass
+            }
+
+            Debug.Log("Heart Rate: " + read_hr + " BPM");
+            if (read_hr != -1)
+            {
+                CurrentHR = read_hr;
+            }
         }
 
         CurrentState.Update(this);
