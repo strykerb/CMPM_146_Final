@@ -8,7 +8,7 @@ public class GameBuildupState : GameBaseState
     {
         Debug.Log("Building up.");
         controller.Spawner.SetSpawnEnabled(true);
-        controller.GetRestingHR();
+        controller.FindRestingHR();
         TargetMul = 1.2f;
         TargetHR = controller.RestingHR * TargetMul;
         MaxTimeInState = 60.0f;

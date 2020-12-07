@@ -23,9 +23,10 @@ public class GameController : MonoBehaviour
     };
     public SensorMode CurrentSensorMode = SensorMode.Manual;
 
-    public float TimeInState;  // Time since last state transition.
-    public float RestingHR;    // Store player's approx resting heartrate.
-    public float CurrentHR;    // Store player's current heartrate.
+    public float TimeInState;   // Time since last state transition.
+    public float RestingHR;     // Player's approx resting heartrate.
+    public float CurrentHR;     // Player's current heartrate.
+    public float ComplexMetric; // A metric based on HR and GSR
 
     // States we can use for the FSM
     public GameRestState RestState = new GameRestState();
@@ -65,7 +66,11 @@ public class GameController : MonoBehaviour
             if (read_hr != -1)
             {
                 CurrentHR = read_hr;
+
+                // With HR found, get complex metric this frame
+                if (CurrentSensorMode == SensorMode.Complex) ComputeComplexMetric();
             }
+
         }
 
         CurrentState.Update(this);
@@ -113,8 +118,13 @@ public class GameController : MonoBehaviour
      * Heart rate methods.
      */
 
-    public void GetRestingHR()
+    public void FindRestingHR()
     {
         RestingHR = Mathf.Min(60.0f, CurrentHR); // Hardcoded until we have sensor data.
+    }
+
+    private void ComputeComplexMetric() // Gets a metric based on HR and GSR data for Complex readings.
+    {
+        ComplexMetric = 0.0f;
     }
 }
