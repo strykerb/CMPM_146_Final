@@ -6,6 +6,7 @@ public class GameBuildupState : GameBaseState
 {
     public override void EnterState(GameController controller)
     {
+        Debug.Log("Building up.");
         controller.Spawner.SetSpawnEnabled(true);
         controller.GetRestingHR();
         TargetMul = 1.2f;
@@ -15,7 +16,6 @@ public class GameBuildupState : GameBaseState
 
     public override void Update(GameController controller)
     {
-        Debug.Log("Building Up");
         if (CheckGoalReached(controller.RestingHR, controller.CurrentHR, controller.TimeInState))
         {
             controller.TransitionToState(controller.ClimaxState);
