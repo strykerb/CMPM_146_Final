@@ -8,6 +8,7 @@ public class SpawnManager : MonoBehaviour
     int ENEMY_COUNT_INCREASE = 3;
     float ENEMY_DELAY_FACTOR = 5;
     public GameObject enemy;
+    private List<GameObject> spawnables = new List<GameObject>();
     public Vector3[] SpawnPoints;
     public float SpawnDelay;
     private float spawnTimer;
@@ -21,6 +22,7 @@ public class SpawnManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        spawnables.Add(enemy);
         UpdateValues();
         maxAtOnce = 10;
     }
@@ -69,6 +71,10 @@ public class SpawnManager : MonoBehaviour
             idx2 = SpawnPoints.Length - 1;
         }
 
+        // Get random enemy from spawnable enemies
+        int enemy_idx = Random.Range(0, spawnables.Count-1);
+        enemy = spawnables[enemy_idx];
+
         float spawn_x = Random.Range(SpawnPoints[idx].x, SpawnPoints[idx2].x);
         float spawn_z = Random.Range(SpawnPoints[idx].z, SpawnPoints[idx2].z);
         Transform myInstance = PoolManager.Pools["Enemies"].Spawn(enemy, new Vector3(spawn_x, SpawnPoints[0].y, spawn_z), Quaternion.identity);
@@ -91,5 +97,36 @@ public class SpawnManager : MonoBehaviour
     public void SetSpawnEnabled(bool enabled)
     {
         SpawnEnabled = enabled;
+    }
+
+    // Check if a GameObject is in the spawnables list
+    private bool CheckSpawnable(GameObject objToCheck)
+    {
+        foreach (GameObject spawnable in spawnables)
+        {
+            if (spawnable.GetType().Equals(objToCheck))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Add enemy to spawnable list
+    public bool AddEnemyToSpawns(GameObject enemyToAdd)
+    {
+        // Only add if the enemy isn't already in the list
+        if (!CheckSpawnable(enemyToAdd))
+        {
+            spawnables.Add(enemyToAdd);
+            return true;
+        }
+        return false;
+    }
+
+    // Remove enemy from spawnable list
+    public bool RemoveEnemyFromSpawns(GameObject enemyToRemove)
+    {
+        return spawnables.Remove(enemyToRemove); // Return the success of removing the enemy
     }
 }

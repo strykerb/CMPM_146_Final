@@ -101,12 +101,12 @@ public class GameController : MonoBehaviour
 
     public bool AddEnemyToPool(GameObject NewEnemy)
     {
-        return false;
+        return Spawner.AddEnemyToSpawns(NewEnemy);
     }
 
     public bool RemoveEnemyFromPool(GameObject Enemy)
     {
-        return false;
+        return Spawner.RemoveEnemyFromSpawns(Enemy);
     }
 
     /*
