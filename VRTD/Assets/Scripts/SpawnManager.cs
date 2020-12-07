@@ -15,7 +15,8 @@ public class SpawnManager : MonoBehaviour
     public int maxAtOnce;
     public int RoundNumber;
     private int num_Spawned;
-    private int aliveNow;
+    public int aliveNow;
+    private bool SpawnEnabled = false;
     
     // Start is called before the first frame update
     void Start()
@@ -27,18 +28,21 @@ public class SpawnManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        spawnTimer += Time.deltaTime;
-        
-        if (num_Spawned == EnemyCount && aliveNow == 0)
+        if (SpawnEnabled)
         {
-            Debug.Log("Round " + RoundNumber + " complete. ");
-            IncrementRound();
-        }
-        
-        if (spawnTimer >= SpawnDelay && num_Spawned < EnemyCount && aliveNow < maxAtOnce)
-        {
-            SpawnZombie();
-            spawnTimer = 0f;
+            spawnTimer += Time.deltaTime;
+
+            if (num_Spawned == EnemyCount && aliveNow == 0)
+            {
+                Debug.Log("Round " + RoundNumber + " complete. ");
+                IncrementRound();
+            }
+
+            if (spawnTimer >= SpawnDelay && num_Spawned < EnemyCount && aliveNow < maxAtOnce)
+            {
+                SpawnZombie();
+                spawnTimer = 0f;
+            }
         }
     }
 
@@ -81,5 +85,11 @@ public class SpawnManager : MonoBehaviour
     public int GetNumAlive()
     {
         return aliveNow;
+    }
+
+    // Enable/disable spawning
+    public void SetSpawnEnabled(bool enabled)
+    {
+        SpawnEnabled = enabled;
     }
 }

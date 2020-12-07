@@ -6,6 +6,7 @@ public class GameCooldownState : GameBaseState
 {
     public override void EnterState(GameController controller)
     {
+        controller.Spawner.SetSpawnEnabled(false);
         KillsLeft = controller.Spawner.GetNumAlive();
     }
 

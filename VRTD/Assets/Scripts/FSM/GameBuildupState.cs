@@ -6,6 +6,7 @@ public class GameBuildupState : GameBaseState
 {
     public override void EnterState(GameController controller)
     {
+        controller.Spawner.SetSpawnEnabled(true);
         controller.GetRestingHR();
         TargetMul = 1.2f;
         TargetHR = controller.RestingHR * TargetMul;
