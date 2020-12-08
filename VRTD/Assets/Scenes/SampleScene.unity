@@ -17,7 +17,7 @@ RenderSettings:
   m_Fog: 1
   m_FogColor: {r: 0, g: 0, b: 0, a: 1}
   m_FogMode: 3
-  m_FogDensity: 0.15
+  m_FogDensity: 0.1
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 170076734}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.0030344916, g: 0.0061871023, b: 0.014093099, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -346,7 +346,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!108 &170076734
 Light:
   m_ObjectHideFlags: 0
@@ -472,9 +472,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Spawner: {fileID: 1956775593}
+  CurrentSensorMode: 0
   TimeInState: 0
   RestingHR: 0
   CurrentHR: 0
+  ComplexMetric: 0
 --- !u!1 &257649512
 GameObject:
   m_ObjectHideFlags: 0
@@ -1184,6 +1186,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 110414, guid: 380bbbca09a806c4c8607dd111d9ed8f, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 169168, guid: 380bbbca09a806c4c8607dd111d9ed8f, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 4294967295
@@ -1373,6 +1379,11 @@ PrefabInstance:
     - target: {fileID: 1000011558766812, guid: 380bbbca09a806c4c8607dd111d9ed8f, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 236069139579365536, guid: 380bbbca09a806c4c8607dd111d9ed8f,
+        type: 3}
+      propertyPath: m_Range
+      value: 20
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 380bbbca09a806c4c8607dd111d9ed8f, type: 3}
@@ -2411,6 +2422,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
+    - target: {fileID: 110414, guid: 380bbbca09a806c4c8607dd111d9ed8f, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 169168, guid: 380bbbca09a806c4c8607dd111d9ed8f, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 4294967295
@@ -3090,7 +3105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70eb8c1a868d30049b944518a011959a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemy: {fileID: 4259202388077954028, guid: c8d3519963fa1984091404e785677583, type: 3}
+  enemy: {fileID: 4259202388077954028, guid: 3fb5ac5cb50c9e7408543972c0dc0c67, type: 3}
   SpawnPoints:
   - {x: 14, y: 0, z: 14}
   - {x: -14, y: 0, z: 14}
@@ -3100,6 +3115,7 @@ MonoBehaviour:
   EnemyCount: 0
   maxAtOnce: 0
   RoundNumber: 0
+  aliveNow: 0
 --- !u!4 &1956775594
 Transform:
   m_ObjectHideFlags: 0
@@ -3294,6 +3310,10 @@ PrefabInstance:
     - target: {fileID: 110414, guid: 380bbbca09a806c4c8607dd111d9ed8f, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 110414, guid: 380bbbca09a806c4c8607dd111d9ed8f, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 169168, guid: 380bbbca09a806c4c8607dd111d9ed8f, type: 3}
       propertyPath: m_StaticEditorFlags

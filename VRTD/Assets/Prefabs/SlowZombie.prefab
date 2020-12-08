@@ -5528,6 +5528,7 @@ GameObject:
   - component: {fileID: 6954593311707136600}
   - component: {fileID: 4260118637230491796}
   - component: {fileID: 2395842813387613960}
+  - component: {fileID: 798703762563775727}
   m_Layer: 0
   m_Name: SlowZombie
   m_TagString: Enemy
@@ -5548,7 +5549,6 @@ Transform:
   m_Children:
   - {fileID: 5533569133721309692}
   - {fileID: 9141780080696775227}
-  - {fileID: 7390173321719975188}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0.24}
@@ -5623,6 +5623,102 @@ MonoBehaviour:
   ignitionDelay: 0
   ignitionSound: {fileID: 0}
   canSpreadFromThisSource: 1
+--- !u!82 &798703762563775727
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4259202388077954028}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 6590ec3f367bc87449f97b5e8266f8a8, type: 3}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &4321768844145152108
 GameObject:
   m_ObjectHideFlags: 0
@@ -5648,13 +5744,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4321768844145152108}
-  m_LocalRotation: {x: -0.000076886965, y: 0.7081426, z: -0.006761977, w: 0.7060371}
-  m_LocalPosition: {x: 0, y: 0.79, z: 0}
-  m_LocalScale: {x: 0.34746003, y: 0.34746003, z: 0.34745997}
+  m_LocalRotation: {x: -0.04954552, y: 0.9012008, z: -0.014876768, w: 0.43030348}
+  m_LocalPosition: {x: 0.04830408, y: -0.021334747, z: 0.03579019}
+  m_LocalScale: {x: 0.3474601, y: 0.34746006, z: 0.34745994}
   m_Children:
   - {fileID: 6541389500243456464}
-  m_Father: {fileID: 4255355582256226634}
-  m_RootOrder: 2
+  m_Father: {fileID: 2565752896873966611}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!198 &6786667997248172303
 ParticleSystem:
@@ -10956,6 +11052,7 @@ Transform:
   - {fileID: 5460018553756128623}
   - {fileID: 1810151780797487916}
   - {fileID: 2878815549973880704}
+  - {fileID: 7390173321719975188}
   m_Father: {fileID: 5533569133721309692}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 3.2110002, y: -18.94, z: -4.4700003}

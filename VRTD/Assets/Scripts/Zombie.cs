@@ -75,7 +75,7 @@ public class Zombie : Character
     protected override void OnUpdate()
     {
         
-        agent.destination = FindObjectOfType<Player>().gameObject.transform.position;
+        //agent.destination = FindObjectOfType<Player>().gameObject.transform.position;
         if (fire.isBurning && getHealth() >= 1)
         {
             setHealth(-1);
