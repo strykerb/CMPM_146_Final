@@ -10,14 +10,13 @@ public abstract class GameBaseState
     public float TargetMul = 0.0f;         // Target heartrate as a multiplier of the resting heartrate. NYI.
     public float MaxTimeInState = 0.0f;    // Maximum time to spend in state. NYI.
     public float MaxHR = 170.0f;           // The absolute maximum heartrate. NYI.
-    protected int KillsLeft = -1;             // Remaining enemy kills in order to transition;
+    protected int KillsLeft = -1;          // Remaining enemy kills in order to transition;
 
     public abstract void EnterState(GameController controller);
     public abstract void Update(GameController controller);
 
     public bool CheckGoalReached(float RestingHeartRate, float CurrentHeartRate, float Time)
     {
-
         // Check time regardless of heartrate
         if (Time >= MaxTimeInState)
         {

@@ -7,27 +7,37 @@ using PathologicalGames;
 
 public class Zombie : Character
 {
-    public int this_health;
     Animator anim;
-    public bool dead;
-    float Timer;
     Vector3 goal;
     NavMeshAgent agent;
-    public float SPEED;
-    FireSource fire;
     private SpawnManager spawnManager;
+    FireSource fire;
+    public AudioClip[] sounds;
+    AudioSource zombie_audio;
+
+    public bool dead;
+    float attackTimer;
+    float soundTimer;
+    public float SPEED;
+    public int MAX_HEALTH;
+    
+    
+    bool isAttacking;
 
     protected override void Initialize()
     {
         Debug.Log("Initialized!");
-        setHealth(100);
+        setHealth(MAX_HEALTH);
         dead = false;
-        removeArrows();
+        isAttacking = false;
+        //removeArrows();
         anim = GetComponentInChildren<Animator>();
-        goal = FindObjectOfType<Player>().gameObject.transform.position;
+        //goal = FindObjectOfType<Player>().gameObject.transform.position;
+        goal = new Vector3(0, 0, 0);
         spawnManager = FindObjectOfType<SpawnManager>();
         agent = GetComponent<NavMeshAgent>();
         fire = GetComponent<FireSource>();
+        zombie_audio = GetComponent<AudioSource>();
         if (!anim.isInitialized)
         {
             anim.Rebind();
@@ -74,11 +84,12 @@ public class Zombie : Character
 
     protected override void OnUpdate()
     {
-        
+
         //agent.destination = FindObjectOfType<Player>().gameObject.transform.position;
+        soundTimer -= Time.deltaTime;
         if (fire.isBurning && getHealth() >= 1)
         {
-            setHealth(-1);
+            setHealth(getHealth() - 1);
         }
 
         if (!dead && getHealth() <= 0)
@@ -96,16 +107,66 @@ public class Zombie : Character
             spawnManager.DecrementLiveZombies();
             dead = true;
         }
-        this_health = getHealth();
+
+        if (isAttacking)
+        {
+            attackTimer += Time.deltaTime;
+            transform.LookAt(new Vector3(0,0,0) * Time.deltaTime);
+            if (attackTimer > 2)
+                attack();
+        }
+
+        if (soundTimer < 0)
+        {
+            MakeSound();
+        }
+
+        if (!isAttacking && this.transform.position.x < 2 && this.transform.position.x > -2)
+        {
+            if (this.transform.position.z < 2 && this.transform.position.z > -2)
+            {
+                BeginAttack();
+            }
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("projectile"))
         {
-            setHealth(-50);
+            setHealth(getHealth() - 100);
             Destroy(collision.gameObject);
         }
+    }
+
+    void attack()
+    {
+        attackTimer = 0;
+        if (Random.Range(0,1) > 0)
+        {
+            anim.SetBool("doAttack1", true);
+            anim.SetBool("doAttack2", false);
+        }
+        else
+        {
+            anim.SetBool("doAttack2", true);
+            anim.SetBool("doAttack1", false);
+        }
+    }
+
+    void BeginAttack()
+    {
+        isAttacking = true;
+        agent.isStopped = true;
+        attack();
+    }
+
+    void MakeSound()
+    {
+        soundTimer = 3 + Random.Range(0, 7);
+        int audio_idx = Random.Range(0, sounds.Length);
+        zombie_audio.clip = sounds[audio_idx];
+        zombie_audio.Play();
     }
 
     protected override void Destroy()

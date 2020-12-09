@@ -30,7 +30,7 @@ public abstract class Character : MonoBehaviour
 
     public void setHealth(int value)
     {
-        Health += value;
+        Health = value;
     }
 
     public float getSpeed()

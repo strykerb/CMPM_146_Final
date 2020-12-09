@@ -8,6 +8,7 @@ public class SpawnManager : MonoBehaviour
     int ENEMY_COUNT_INCREASE = 3;
     float ENEMY_DELAY_FACTOR = 5;
     public GameObject enemy;
+    public GameObject enemy2;
     private List<GameObject> spawnables = new List<GameObject>();
     public Vector3[] SpawnPoints;
     public float SpawnDelay;
@@ -24,7 +25,7 @@ public class SpawnManager : MonoBehaviour
     {
         spawnables.Add(enemy);
         UpdateValues();
-        maxAtOnce = 10;
+        maxAtOnce = 15;
     }
 
     // Update is called once per frame
@@ -72,12 +73,11 @@ public class SpawnManager : MonoBehaviour
         }
 
         // Get random enemy from spawnable enemies
-        int enemy_idx = Random.Range(0, spawnables.Count-1);
-        enemy = spawnables[enemy_idx];
-
+        int enemy_idx = Random.Range(0, spawnables.Count);
+        //enemy = spawnables[enemy_idx];
         float spawn_x = Random.Range(SpawnPoints[idx].x, SpawnPoints[idx2].x);
         float spawn_z = Random.Range(SpawnPoints[idx].z, SpawnPoints[idx2].z);
-        Transform myInstance = PoolManager.Pools["Enemies"].Spawn(enemy, new Vector3(spawn_x, SpawnPoints[0].y, spawn_z), Quaternion.identity);
+        Transform myInstance = PoolManager.Pools["Enemies"].Spawn(spawnables[enemy_idx], new Vector3(spawn_x, SpawnPoints[0].y, spawn_z), Quaternion.identity);
         num_Spawned++;
         aliveNow++;
     }
