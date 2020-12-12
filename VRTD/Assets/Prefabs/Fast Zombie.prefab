@@ -5587,7 +5587,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sounds:
-  - {fileID: 8300000, guid: 1689058eeeb072842b8c76940508c2a7, type: 3}
+  - {fileID: 8300000, guid: 84d048220c3353742952e4db1048584d, type: 3}
+  - {fileID: 8300000, guid: d104e799fe3b69b4b952ae543c256e7a, type: 3}
+  - {fileID: 8300000, guid: 1c6ecb45f1250224fa67fb1db50488d3, type: 3}
+  - {fileID: 8300000, guid: 1fb4f3501d2fce24ea90a3d5c8c26247, type: 3}
+  - {fileID: 8300000, guid: 0e51d2f80bc1b4f4698b4bbbd276fdf2, type: 3}
   dead: 0
   SPEED: 2
   MAX_HEALTH: 100

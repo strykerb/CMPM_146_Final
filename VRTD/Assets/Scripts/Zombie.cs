@@ -9,53 +9,94 @@ public class Zombie : Character
 {
     Animator anim;
     Vector3 goal;
+    GameObject[] torches;
     NavMeshAgent agent;
     private SpawnManager spawnManager;
     FireSource fire;
     public AudioClip[] sounds;
     AudioSource zombie_audio;
+    GameObject target;
 
     public bool dead;
+    bool hasDealtDamage;
     float attackTimer;
     float soundTimer;
     public float SPEED;
     public int MAX_HEALTH;
-    
+
+    // This distance seems to look natural
+    float stopping_dist = 1f;
     
     bool isAttacking;
 
     protected override void Initialize()
     {
-        Debug.Log("Initialized!");
-        setHealth(MAX_HEALTH);
-        dead = false;
-        isAttacking = false;
-        //removeArrows();
-        anim = GetComponentInChildren<Animator>();
-        //goal = FindObjectOfType<Player>().gameObject.transform.position;
-        goal = new Vector3(0, 0, 0);
+        // Just Assigning refrences
         spawnManager = FindObjectOfType<SpawnManager>();
         agent = GetComponent<NavMeshAgent>();
         fire = GetComponent<FireSource>();
         zombie_audio = GetComponent<AudioSource>();
+        anim = GetComponentInChildren<Animator>();
+
+        // Health and Speed defined on Prefab in editor
+        setHealth(MAX_HEALTH);
+        agent.speed = SPEED;
+
+        // set dafault bool values
+        dead = false;
+        isAttacking = false;
+        hasDealtDamage = false;
+        fire.isBurning = false;
+        agent.isStopped = false;
+
+        // Assign torch object reference array
+        torches = spawnManager.torches;
+
+        // Send Navmesh Agent on its merry way to the closest torch
+        target = FindTarget();
+        SetDestination();
+        
+        // May not be necessary: resets AC upon spawn
         if (!anim.isInitialized)
         {
             anim.Rebind();
         }
-        fire.isBurning = false;
-        agent.speed = SPEED;
-        agent.destination = goal;
+    }
+    
+    // Returns reference to the closest torch to self
+    GameObject FindTarget()
+    {
+        float least_dist = 10000f;
+        GameObject closest_torch = null;
+
+        foreach (GameObject torch in torches)
+        {
+            if (!torch.activeSelf)
+            {
+                continue;
+            }
+            float curr_dist = Vector3.Distance(this.transform.position, torch.transform.position);
+            Debug.Log("distance from " + this +  " to " + torch + ": " + curr_dist);
+            if (curr_dist < least_dist)
+            {
+                least_dist = curr_dist;
+                closest_torch = torch;
+            }
+        }
+        Debug.Log("closest torch from " + this + " is " + closest_torch);
+        return closest_torch;
+    }
+
+    void SetDestination()
+    {
+        target = FindTarget();
+        if (target != null)
+        {
+            goal = new Vector3(target.transform.position.x, 0, target.transform.position.z);
+            agent.destination = goal;
+        }
         agent.isStopped = false;
-        //ResetAnimations();
-        if (Random.Range(0, 2) > 2)
-        {
-            anim.SetBool("OtherWalk", true);
-        }
-        else
-        {
-            anim.SetBool("OtherWalk", false);
-        }
-    }      
+    }
 
     void ResetAnimations()
     {
@@ -108,10 +149,21 @@ public class Zombie : Character
             dead = true;
         }
 
+        if (!target.activeSelf)
+        {
+            SetDestination();
+            isAttacking = false;
+        }
+
         if (isAttacking)
         {
             attackTimer += Time.deltaTime;
-            transform.LookAt(new Vector3(0,0,0) * Time.deltaTime);
+            //transform.LookAt(goal * Time.deltaTime);
+            if (!hasDealtDamage && attackTimer > 1)
+            {
+                target.GetComponent<Torch>().TakeDamage();
+                hasDealtDamage = true;
+            }
             if (attackTimer > 2)
                 attack();
         }
@@ -121,12 +173,9 @@ public class Zombie : Character
             MakeSound();
         }
 
-        if (!isAttacking && this.transform.position.x < 2 && this.transform.position.x > -2)
+        if (!isAttacking && Vector3.Distance(this.transform.position, goal) < stopping_dist)
         {
-            if (this.transform.position.z < 2 && this.transform.position.z > -2)
-            {
-                BeginAttack();
-            }
+            BeginAttack();
         }
     }
 
@@ -142,15 +191,16 @@ public class Zombie : Character
     void attack()
     {
         attackTimer = 0;
+        hasDealtDamage = false;
         if (Random.Range(0,1) > 0)
-        {
-            anim.SetBool("doAttack1", true);
-            anim.SetBool("doAttack2", false);
-        }
-        else
         {
             anim.SetBool("doAttack2", true);
             anim.SetBool("doAttack1", false);
+        }
+        else
+        {
+            anim.SetBool("doAttack1", true);
+            anim.SetBool("doAttack2", false);
         }
     }
 

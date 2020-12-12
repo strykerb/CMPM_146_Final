@@ -38,7 +38,8 @@ namespace ShimmerConsoleAppExample
             byte[] defaultECGReg1 = ShimmerBluetooth.SHIMMER3_DEFAULT_TEST_REG1; //also see ShimmerBluetooth.SHIMMER3_DEFAULT_ECG_REG1 && ShimmerBluetooth.SHIMMER3_DEFAULT_EMG_REG1
             byte[] defaultECGReg2 = ShimmerBluetooth.SHIMMER3_DEFAULT_TEST_REG2; //also see ShimmerBluetooth.SHIMMER3_DEFAULT_ECG_REG2 && ShimmerBluetooth.SHIMMER3_DEFAULT_EMG_REG2
             //The constructor below allows the user to specify the shimmer configurations which is set upon connection to the device
-            shimmer = new ShimmerLogAndStreamSystemSerialPort("ShimmerID1", "COM169", samplingRate, 0, 4, enabledSensors, false, false, false, 0, 0, defaultECGReg1, defaultECGReg2, false);
+            //shimmer = new ShimmerLogAndStreamSystemSerialPort("ShimmerID1", "COM5", samplingRate, 0, 4, enabledSensors, false, false, false, 0, 0, defaultECGReg1, defaultECGReg2, false);
+            shimmer = new ShimmerLogAndStreamSystemSerialPort("ShimmerID1", "COM5", samplingRate, 0, 4, enabledSensors, true, true, true, 0, 0, defaultECGReg1, defaultECGReg2, false);
             shimmer.UICallback += this.HandleEvent;
             shimmer.Connect();
             if (shimmer.GetState() == ShimmerBluetooth.SHIMMER_STATE_CONNECTED)
@@ -99,6 +100,7 @@ namespace ShimmerConsoleAppExample
                     ObjectCluster objectCluster = (ObjectCluster)eventArgs.getObject();
                     //SensorData data = objectCluster.GetData(Shimmer3Configuration.SignalNames.EXG1_CH1_16BIT, "CAL");
                     SensorData data = objectCluster.GetData(Shimmer3Configuration.SignalNames.EXG1_CH1, "CAL");
+
                     System.Console.WriteLine("EXG Channel 1: " + data.Data);
                     logging.WriteData(objectCluster);
                     break;

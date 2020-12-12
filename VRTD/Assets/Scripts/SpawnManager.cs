@@ -10,6 +10,7 @@ public class SpawnManager : MonoBehaviour
     public GameObject enemy;
     public GameObject enemy2;
     private List<GameObject> spawnables = new List<GameObject>();
+    public GameObject[] torches;
     public Vector3[] SpawnPoints;
     public float SpawnDelay;
     private float spawnTimer;
@@ -26,7 +27,16 @@ public class SpawnManager : MonoBehaviour
         spawnables.Add(enemy);
         UpdateValues();
         maxAtOnce = 15;
+
+        torches = new GameObject[4];
+        int idx = 0;
+        foreach (Torch torch in FindObjectsOfType<Torch>())
+        {
+            torches[idx] = torch.gameObject;
+            idx++;
+        }
     }
+
 
     // Update is called once per frame
     void Update()
