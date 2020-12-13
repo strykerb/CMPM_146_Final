@@ -5586,15 +5586,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54b47e32e7d5b0948b82357effa3c17d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dead: 0
   sounds:
   - {fileID: 8300000, guid: 6590ec3f367bc87449f97b5e8266f8a8, type: 3}
   - {fileID: 8300000, guid: 65468a827a14a4844baadde01f36346d, type: 3}
   - {fileID: 8300000, guid: 99aec1d91dccff34fbb57553bc9af289, type: 3}
   - {fileID: 8300000, guid: a85128fb48abb614295c2044fb69bdc8, type: 3}
   - {fileID: 8300000, guid: 89bc103ab46d4aa439d0661c2cbba4cb, type: 3}
+  deathSounds:
+  - {fileID: 8300000, guid: 4a6d4ce5661a7c34e9eeaa9e5e73b9a9, type: 3}
+  - {fileID: 8300000, guid: d06ebfbf9849e3e4a981969e6bf75e1c, type: 3}
+  - {fileID: 8300000, guid: 8675171f36de1be409727ecad8d3309d, type: 3}
+  dead: 0
   SPEED: 0.3
-  MAX_HEALTH: 100
+  MAX_HEALTH: 200
 --- !u!136 &4260118637230491796
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -5641,7 +5645,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 6590ec3f367bc87449f97b5e8266f8a8, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -5650,7 +5654,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 100
+  MaxDistance: 16
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0

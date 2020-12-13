@@ -14,8 +14,11 @@ public class Zombie : Character
     private SpawnManager spawnManager;
     FireSource fire;
     public AudioClip[] sounds;
+    public AudioClip[] deathSounds;
     AudioSource zombie_audio;
     GameObject target;
+    CapsuleCollider hitbox;
+    CapsuleCollider fireHitbox;
 
     public bool dead;
     bool hasDealtDamage;
@@ -37,6 +40,8 @@ public class Zombie : Character
         fire = GetComponent<FireSource>();
         zombie_audio = GetComponent<AudioSource>();
         anim = GetComponentInChildren<Animator>();
+        hitbox = gameObject.GetComponent<CapsuleCollider>();
+        fireHitbox = fire.GetComponent<CapsuleCollider>();
 
         // Health and Speed defined on Prefab in editor
         setHealth(MAX_HEALTH);
@@ -76,14 +81,12 @@ public class Zombie : Character
                 continue;
             }
             float curr_dist = Vector3.Distance(this.transform.position, torch.transform.position);
-            Debug.Log("distance from " + this +  " to " + torch + ": " + curr_dist);
             if (curr_dist < least_dist)
             {
                 least_dist = curr_dist;
                 closest_torch = torch;
             }
         }
-        Debug.Log("closest torch from " + this + " is " + closest_torch);
         return closest_torch;
     }
 
@@ -102,6 +105,8 @@ public class Zombie : Character
     {
         anim.SetBool("FireDeath", false);
         anim.SetBool("ProjectileDeath", false);
+        anim.SetBool("doAttack1", false);
+        anim.SetBool("doAttack2", false);
     }
 
     void removeArrows()
@@ -126,8 +131,15 @@ public class Zombie : Character
     protected override void OnUpdate()
     {
 
-        //agent.destination = FindObjectOfType<Player>().gameObject.transform.position;
+        // Despawn if all torches are destroyed
+        if (target == null)
+        {
+            PoolManager.Pools["Enemies"].Despawn(this.transform, 3.5f);
+            return;
+        }
+
         soundTimer -= Time.deltaTime;
+
         if (fire.isBurning && getHealth() >= 1)
         {
             setHealth(getHealth() - 1);
@@ -144,27 +156,31 @@ public class Zombie : Character
             {
                 anim.SetBool("ProjectileDeath", true);
             }
+            
+            // Despawn instead of destroy to reuse in pool manager
             PoolManager.Pools["Enemies"].Despawn(this.transform, 3.5f);
             spawnManager.DecrementLiveZombies();
             dead = true;
         }
 
-        if (!target.activeSelf)
+        // If current target torch is destroyed, redirect
+        if (target != null && !target.activeSelf)
         {
             SetDestination();
             isAttacking = false;
         }
 
+        // Deal damage partway through the animation
         if (isAttacking)
         {
             attackTimer += Time.deltaTime;
-            //transform.LookAt(goal * Time.deltaTime);
             if (!hasDealtDamage && attackTimer > 1)
             {
                 target.GetComponent<Torch>().TakeDamage();
                 hasDealtDamage = true;
             }
-            if (attackTimer > 2)
+            // 2.617 is the length of the attack animation
+            if (attackTimer > 2.617)
                 attack();
         }
 
@@ -184,6 +200,8 @@ public class Zombie : Character
         if (collision.gameObject.CompareTag("projectile"))
         {
             setHealth(getHealth() - 100);
+            int rand_idx = Random.Range(0, deathSounds.Length - 1);
+            zombie_audio.PlayOneShot(deathSounds[rand_idx], 0.5f);
             Destroy(collision.gameObject);
         }
     }
@@ -208,12 +226,29 @@ public class Zombie : Character
     {
         isAttacking = true;
         agent.isStopped = true;
+        ResetHitbox();
         attack();
+    }
+
+    // Crawling zombie needs hitbox reset when he stands up and starts attacking
+    void ResetHitbox()
+    {
+        // Set arrow hitbox
+        hitbox.center = new Vector3(0, 1f, 0);
+        hitbox.radius = 0.3f;
+        hitbox.height = 1.8f;
+        hitbox.direction = 1;
+
+        // Set Fire hitbox
+        fireHitbox.center = new Vector3(0, .15f, 0);
+        fireHitbox.radius = 0.38f;
+        fireHitbox.height = 3f;
+        fireHitbox.direction = 1;
     }
 
     void MakeSound()
     {
-        soundTimer = 3 + Random.Range(0, 7);
+        soundTimer = 5 + Random.Range(0, 10);
         int audio_idx = Random.Range(0, sounds.Length);
         zombie_audio.clip = sounds[audio_idx];
         zombie_audio.Play();

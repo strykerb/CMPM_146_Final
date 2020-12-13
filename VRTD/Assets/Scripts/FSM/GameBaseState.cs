@@ -11,6 +11,7 @@ public abstract class GameBaseState
     public float MaxTimeInState = 0.0f;    // Maximum time to spend in state. NYI.
     public float MaxHR = 170.0f;           // The absolute maximum heartrate. NYI.
     protected int KillsLeft = -1;          // Remaining enemy kills in order to transition;
+    public MusicManager musicManager;
 
     public abstract void EnterState(GameController controller);
     public abstract void Update(GameController controller);

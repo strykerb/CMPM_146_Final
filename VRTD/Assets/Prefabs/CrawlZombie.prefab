@@ -5263,8 +5263,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2393702490870691935}
   m_LocalRotation: {x: 0.000000059604645, y: -0, z: -0.00000020861626, w: 1}
-  m_LocalPosition: {x: 0, y: 1.06, z: -0.00065517426}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalPosition: {x: 0, y: 0, z: -0.00065517426}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4255355582256226634}
   m_RootOrder: 1
@@ -5293,12 +5293,12 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2393702490870691935}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.38
-  m_Height: 3
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.15, z: 0}
+  m_Radius: 0.3
+  m_Height: 1.5
+  m_Direction: 2
+  m_Center: {x: 0, y: 0.2, z: 0}
 --- !u!1 &2523243557154077178
 GameObject:
   m_ObjectHideFlags: 0
@@ -5360,6 +5360,7 @@ Transform:
   - {fileID: 5320932918763236248}
   - {fileID: 3615823892844771198}
   - {fileID: 755801842423304945}
+  - {fileID: 7390173321719975188}
   m_Father: {fileID: 8713945273389140840}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5587,11 +5588,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sounds:
-  - {fileID: 8300000, guid: 84d048220c3353742952e4db1048584d, type: 3}
-  - {fileID: 8300000, guid: d104e799fe3b69b4b952ae543c256e7a, type: 3}
-  - {fileID: 8300000, guid: 1c6ecb45f1250224fa67fb1db50488d3, type: 3}
-  - {fileID: 8300000, guid: 1fb4f3501d2fce24ea90a3d5c8c26247, type: 3}
-  - {fileID: 8300000, guid: 0e51d2f80bc1b4f4698b4bbbd276fdf2, type: 3}
+  - {fileID: 8300000, guid: 430f747a2cd65d64e825cba04db97450, type: 3}
+  - {fileID: 8300000, guid: f915ca42725130342877baeb06cb336e, type: 3}
+  - {fileID: 8300000, guid: 7b6cfe2d377e84241a8d9b3fb778e3d8, type: 3}
+  - {fileID: 8300000, guid: 907a9b7e1710c2a4db23dcce61ce555a, type: 3}
+  - {fileID: 8300000, guid: 2de3c7116b05d1f4b92b3b63e4d19364, type: 3}
+  deathSounds:
+  - {fileID: 8300000, guid: 4a6d4ce5661a7c34e9eeaa9e5e73b9a9, type: 3}
+  - {fileID: 8300000, guid: d06ebfbf9849e3e4a981969e6bf75e1c, type: 3}
+  - {fileID: 8300000, guid: 8675171f36de1be409727ecad8d3309d, type: 3}
   dead: 0
   SPEED: 2
   MAX_HEALTH: 100
@@ -5606,9 +5611,9 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.3
-  m_Height: 1.8
-  m_Direction: 1
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Height: 1.5
+  m_Direction: 2
+  m_Center: {x: 0, y: 0.2, z: 0}
 --- !u!114 &2395842813387613960
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5641,7 +5646,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 6590ec3f367bc87449f97b5e8266f8a8, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -5650,11 +5655,11 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 16
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
-  BypassListenerEffects: 0
+  BypassListenerEffects: 1
   BypassReverbZones: 0
   rolloffCustomCurve:
     serializedVersion: 2
@@ -5750,12 +5755,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4321768844145152108}
-  m_LocalRotation: {x: -0.04954552, y: 0.9012008, z: -0.014876768, w: 0.43030348}
-  m_LocalPosition: {x: 0.04830408, y: -0.021334747, z: 0.03579019}
-  m_LocalScale: {x: 0.3474601, y: 0.34746006, z: 0.34745994}
+  m_LocalRotation: {x: -0.18699633, y: 0.8977337, z: -0.22004497, w: 0.33269638}
+  m_LocalPosition: {x: 0.07434618, y: -0.3421273, z: 0.19707131}
+  m_LocalScale: {x: 0.34746003, y: 0.34746006, z: 0.34745988}
   m_Children:
   - {fileID: 6541389500243456464}
-  m_Father: {fileID: 2565752896873966611}
+  m_Father: {fileID: 7878312505888832259}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!198 &6786667997248172303
@@ -11058,7 +11063,6 @@ Transform:
   - {fileID: 5460018553756128623}
   - {fileID: 1810151780797487916}
   - {fileID: 2878815549973880704}
-  - {fileID: 7390173321719975188}
   m_Father: {fileID: 5533569133721309692}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 3.2110002, y: -18.94, z: -4.4700003}

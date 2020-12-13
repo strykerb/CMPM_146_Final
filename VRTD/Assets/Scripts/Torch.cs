@@ -15,9 +15,6 @@ public class Torch : MonoBehaviour
         // Default Values
         health = 1f;
         lightSource.intensity = 1.0f;
-
-        // Assign Refrences
-        //lightSource = GetComponentInChildren<Light>();
     }
 
     public void TakeDamage()
@@ -36,7 +33,7 @@ public class Torch : MonoBehaviour
 
         if (health <= 0)
         {
-            this.gameObject.SetActive(false);
+            gameObject.SetActive(false);
         }
     }
 }

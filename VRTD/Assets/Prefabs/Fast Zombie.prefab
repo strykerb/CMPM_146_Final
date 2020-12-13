@@ -5592,6 +5592,10 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 1c6ecb45f1250224fa67fb1db50488d3, type: 3}
   - {fileID: 8300000, guid: 1fb4f3501d2fce24ea90a3d5c8c26247, type: 3}
   - {fileID: 8300000, guid: 0e51d2f80bc1b4f4698b4bbbd276fdf2, type: 3}
+  deathSounds:
+  - {fileID: 8300000, guid: 4a6d4ce5661a7c34e9eeaa9e5e73b9a9, type: 3}
+  - {fileID: 8300000, guid: d06ebfbf9849e3e4a981969e6bf75e1c, type: 3}
+  - {fileID: 8300000, guid: 8675171f36de1be409727ecad8d3309d, type: 3}
   dead: 0
   SPEED: 2
   MAX_HEALTH: 100
@@ -5641,7 +5645,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 6590ec3f367bc87449f97b5e8266f8a8, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -5650,7 +5654,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 16
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
