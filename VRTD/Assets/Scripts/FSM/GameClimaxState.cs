@@ -10,7 +10,7 @@ public class GameClimaxState : GameBaseState
         MaxTimeInState = 5.0f;
         controller.Jukebox.PlayMusic(2);
 
-        controller.RemoveEnemyFromPool(controller.Spawner.slowZombie);
+        Debug.Log("Climax Removal: " + controller.RemoveEnemyFromPool(controller.Spawner.slowZombie));
         controller.ModifySpawnFrequency(5);
     }
 

@@ -22,7 +22,7 @@ public class GameController : MonoBehaviour
         Simple, // ECG data only
         Complex // ECG + GSR (NYI)
     };
-    public SensorMode CurrentSensorMode = SensorMode.Complex;
+    public SensorMode CurrentSensorMode = SensorMode.Manual;
 
     public float TimeInState;   // Time since last state transition.
     public float RestingHR;     // Player's approx resting heartrate.

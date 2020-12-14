@@ -18,9 +18,9 @@ public class GameBuildupState : GameBaseState
         MaxTimeInState = 60.0f;
 
         // Manipulate Spawns
-        controller.AddEnemyToPool(controller.Spawner.slowZombie);
-        controller.RemoveEnemyFromPool(controller.Spawner.fastZombie);
-        controller.RemoveEnemyFromPool(controller.Spawner.crawlerZombie);
+        Debug.Log("Buildup Add: " + controller.AddEnemyToPool(controller.Spawner.slowZombie));
+        Debug.Log("Buildup Removal: " + controller.RemoveEnemyFromPool(controller.Spawner.fastZombie));
+        Debug.Log("Buildup Removal: " + controller.RemoveEnemyFromPool(controller.Spawner.crawlerZombie));
         controller.ModifyMaxEnemies(4);
         controller.ModifySpawnFrequency(3);
     }
@@ -41,8 +41,8 @@ public class GameBuildupState : GameBaseState
             // Play some scary sound
 
             // Spawns are more frequent, able to spawn fast zombies, and more total zombies are allowed
-            controller.AddEnemyToPool(controller.Spawner.fastZombie);
-            controller.AddEnemyToPool(controller.Spawner.crawlerZombie);
+            Debug.Log("Add fast: " + controller.AddEnemyToPool(controller.Spawner.fastZombie));
+            Debug.Log("Add crawl: " + controller.AddEnemyToPool(controller.Spawner.crawlerZombie));
             controller.ModifyMaxEnemies(20);
             controller.ModifySpawnFrequency(2);
         }

@@ -51,16 +51,19 @@ public class MusicManager : MonoBehaviour
             return;
         }
 
+        int audioSelection = 0;
         switch (state)
         {
             case 0:
                 audioSources[0].Stop();
-                audioSources[0].clip = RestingMusic[0];
+                audioSelection = (int)Mathf.Floor(Random.Range(0.0f, RestingMusic.Length - 1));
+                audioSources[0].clip = RestingMusic[audioSelection];
                 audioSources[0].Play();
                 break;
             case 1:
                 audioSources[0].Stop();
-                audioSources[0].clip = BuildUpMusic[0];
+                audioSelection = (int)Mathf.Floor(Random.Range(0.0f, BuildUpMusic.Length - 1));
+                audioSources[0].clip = BuildUpMusic[audioSelection];
                 audioSources[0].Play();
                 break;
         }
@@ -170,7 +173,7 @@ public class MusicManager : MonoBehaviour
             // Get current percent of time spent fading, and set
             // volume of sources accordingly.
             fadePercent += Time.deltaTime / 5.0f;
-            Debug.Log(fadePercent);
+            //Debug.Log(fadePercent);
             audioSources[0].volume = 1.0f - fadePercent;
             audioSources[2].volume = fadePercent;
 
