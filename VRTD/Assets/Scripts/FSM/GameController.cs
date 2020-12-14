@@ -13,6 +13,7 @@ public class GameController : MonoBehaviour
 {
     public GameBaseState CurrentState; // Current game state in FSM
     public SpawnManager Spawner;        // Enemy spawn manager to manipulate based on state
+    public MusicManager Jukebox;        // Music manager to manipulate based on state
 
     // What kind of sensor data are we using for the controller?
     public enum SensorMode

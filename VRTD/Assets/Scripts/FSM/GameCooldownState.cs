@@ -8,6 +8,7 @@ public class GameCooldownState : GameBaseState
     {
         Debug.Log("Cooling down.");
         controller.Spawner.SetSpawnEnabled(false);
+        controller.Jukebox.PlayMusic(3);
         KillsLeft = controller.Spawner.GetNumAlive();
     }
 

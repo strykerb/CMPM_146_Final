@@ -8,6 +8,7 @@ public class GameClimaxState : GameBaseState
     {
         Debug.Log("Reached climax.");
         MaxTimeInState = 5.0f;
+        controller.Jukebox.PlayMusic(2);
     }
 
     public override void Update(GameController controller)

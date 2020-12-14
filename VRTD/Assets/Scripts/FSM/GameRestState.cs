@@ -8,8 +8,7 @@ public class GameRestState : GameBaseState
     {
         Debug.Log("Resting.");
         MaxTimeInState = 20.0f;
-        musicManager = GameObject.FindObjectOfType<MusicManager>();
-        musicManager.PlayMusic(0);
+        controller.Jukebox.PlayMusic(0);
     }
 
     public override void Update(GameController controller)

@@ -8,6 +8,7 @@ public class GameBuildupState : GameBaseState
     {
         Debug.Log("Building up.");
         controller.Spawner.SetSpawnEnabled(true);
+        controller.Jukebox.PlayMusic(1);
         controller.FindRestingHR();
         TargetMul = 1.2f;
         TargetHR = controller.RestingHR * TargetMul;
