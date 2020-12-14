@@ -477,6 +477,8 @@ MonoBehaviour:
   TimeInState: 0
   RestingHR: 0
   CurrentHR: 0
+  RestingGSR: 0
+  CurrentGSR: 0
   ComplexMetric: 0
 --- !u!1 &257649512
 GameObject:
@@ -3479,8 +3481,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70eb8c1a868d30049b944518a011959a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemy: {fileID: 4259202388077954028, guid: 2d369b5c433194e47a7f3dc1662971a8, type: 3}
-  enemy2: {fileID: 4259202388077954028, guid: c8d3519963fa1984091404e785677583, type: 3}
+  slowZombie: {fileID: 4259202388077954028, guid: c8d3519963fa1984091404e785677583,
+    type: 3}
+  fastZombie: {fileID: 4259202388077954028, guid: 3fb5ac5cb50c9e7408543972c0dc0c67,
+    type: 3}
+  crawlerZombie: {fileID: 4259202388077954028, guid: 2d369b5c433194e47a7f3dc1662971a8,
+    type: 3}
   torches: []
   SpawnPoints:
   - {x: 14, y: 0, z: 14}

@@ -30,7 +30,7 @@ namespace ShimmerConsoleAppExample
         int IndexGSR;
         int IndexPPG;
         int IndexTimeStamp;
-        
+
         // Path to output file
         static string output;
 
@@ -51,7 +51,7 @@ namespace ShimmerConsoleAppExample
             HPF_PPG = new Filter(Filter.HIGH_PASS, SamplingRate, new double[] { HPF_CORNER_FREQ_HZ });
 
 
-            int enabledSensors = ((int)ShimmerBluetooth.SensorBitmapShimmer3.SENSOR_A_ACCEL| (int)ShimmerBluetooth.SensorBitmapShimmer3.SENSOR_GSR| (int)ShimmerBluetooth.SensorBitmapShimmer3.SENSOR_INT_A13);
+            int enabledSensors = ((int)ShimmerBluetooth.SensorBitmapShimmer3.SENSOR_A_ACCEL | (int)ShimmerBluetooth.SensorBitmapShimmer3.SENSOR_GSR | (int)ShimmerBluetooth.SensorBitmapShimmer3.SENSOR_INT_A13);
             //int enabledSensors = ((int)Shimmer.SensorBitmapShimmer3.SENSOR_A_ACCEL | (int)Shimmer.SensorBitmapShimmer3.SENSOR_EXG1_24BIT | (int)Shimmer.SensorBitmapShimmer3.SENSOR_EXG2_24BIT); 
 
             //shimmer = new Shimmer("ShimmerID1", "COM17");
@@ -59,7 +59,7 @@ namespace ShimmerConsoleAppExample
 
             Shimmer.UICallback += this.HandleEvent;
             Shimmer.Connect();
-            
+
         }
         public void HandleEvent(object sender, EventArgs args)
         {
@@ -72,7 +72,7 @@ namespace ShimmerConsoleAppExample
                     System.Diagnostics.Debug.Write(((ShimmerBluetooth)sender).GetDeviceName() + " State = " + ((ShimmerBluetooth)sender).GetStateString() + System.Environment.NewLine);
                     int state = (int)eventArgs.getObject();
                     if (state == (int)ShimmerBluetooth.SHIMMER_STATE_CONNECTED)
-                    {   
+                    {
                         System.Console.WriteLine("Shimmer is Connected");
                         Task ignoredAwaitableResult = this.delayedWork();
                     }
@@ -116,14 +116,14 @@ namespace ShimmerConsoleAppExample
                     int heartRate = (int)Math.Round(PPGtoHeartRateCalculation.ppgToHrConversion(dataFilteredHP, dataTS.Data));
 
 
-                    if (Count % (SamplingRate/2) == 0) //only display data every half-second
+                    if (Count % (SamplingRate / 2) == 0) //only display data every half-second
                     {
-                        System.Console.WriteLine("AccelX: " + datax.Data + " " + datax.Unit + " AccelY: " + datay.Data + " " + datay.Unit+ " AccelZ: " + dataz.Data + " " + dataz.Unit);
-                        System.Console.WriteLine("Time Stamp: "+ dataTS.Data+ " " + dataTS.Unit + " GSR: " + dataGSR.Data + " "+ dataGSR.Unit + " PPG: " + dataPPG.Data + " " + dataPPG.Unit + " HR: " + heartRate +" BPM");
+                        System.Console.WriteLine("AccelX: " + datax.Data + " " + datax.Unit + " AccelY: " + datay.Data + " " + datay.Unit + " AccelZ: " + dataz.Data + " " + dataz.Unit);
+                        System.Console.WriteLine("Time Stamp: " + dataTS.Data + " " + dataTS.Unit + " GSR: " + dataGSR.Data + " " + dataGSR.Unit + " PPG: " + dataPPG.Data + " " + dataPPG.Unit + " HR: " + heartRate + " BPM");
                         //System.IO.File.WriteAllText(@"..\..\..\..\VRTD\Assets\HRData\data.txt", heartRate.ToString());
                         using (StreamWriter sw = File.AppendText(output))
                         {
-                            sw.WriteLine(heartRate.ToString());
+                            sw.WriteLine(heartRate.ToString() + "\t" + dataGSR.Data);
                         }
                         //System.IO.File.WriteAllText(@"C:\Users\stryk\Desktop\Game Files\CMPM_146_Final\VRTD\Assets\HRData\data.txt", heartRate.ToString());
                     }

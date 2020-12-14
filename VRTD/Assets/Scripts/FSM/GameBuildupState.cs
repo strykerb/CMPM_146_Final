@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class GameBuildupState : GameBaseState
 {
+    public float preludeDuration = 20f;         // Length of transition time between rest and scare
+    bool prelude_concluded = false;
+
     public override void EnterState(GameController controller)
     {
         Debug.Log("Building up.");
@@ -13,6 +16,13 @@ public class GameBuildupState : GameBaseState
         TargetMul = 1.2f;
         TargetHR = controller.RestingHR * TargetMul;
         MaxTimeInState = 60.0f;
+
+        // Manipulate Spawns
+        controller.AddEnemyToPool(controller.Spawner.slowZombie);
+        controller.RemoveEnemyFromPool(controller.Spawner.fastZombie);
+        controller.RemoveEnemyFromPool(controller.Spawner.crawlerZombie);
+        controller.ModifyMaxEnemies(4);
+        controller.ModifySpawnFrequency(3);
     }
 
     public override void Update(GameController controller)
@@ -20,6 +30,21 @@ public class GameBuildupState : GameBaseState
         if (CheckGoalReached(controller.RestingHR, controller.CurrentHR, controller.TimeInState))
         {
             controller.TransitionToState(controller.ClimaxState);
+        }
+
+        // Give a buffer between rest and maximum spawn
+        if (!prelude_concluded && controller.TimeInState > preludeDuration)
+        {
+            // Only do this once
+            prelude_concluded = true;
+
+            // Play some scary sound
+
+            // Spawns are more frequent, able to spawn fast zombies, and more total zombies are allowed
+            controller.AddEnemyToPool(controller.Spawner.fastZombie);
+            controller.AddEnemyToPool(controller.Spawner.crawlerZombie);
+            controller.ModifyMaxEnemies(20);
+            controller.ModifySpawnFrequency(2);
         }
     }
 

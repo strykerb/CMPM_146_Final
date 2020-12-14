@@ -1,4 +1,5 @@
 ﻿using ShimmerAPI;
+using ShimmerLibrary;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace ShimmerConsoleAppExample
     class Program
     {
         ShimmerLogAndStreamSystemSerialPort shimmer;
+        ECGToHRAdaptive ECG_To_HR_and_RR;
 
         //Data is being logged to the bin folder
         Logging logging = new Logging("exgtestsignal.csv", ",");
@@ -29,10 +31,13 @@ namespace ShimmerConsoleAppExample
 
         public void start()
         {
+
+            
             //There are two main uses of the constructors, first one just connects to the device without setting and specific configurations
             //shimmer = new ShimmerSDBT("ShimmerID1", "COM15");
             int enabledSensors = ((int)ShimmerBluetooth.SensorBitmapShimmer3.SENSOR_EXG1_24BIT | (int)ShimmerBluetooth.SensorBitmapShimmer3.SENSOR_EXG2_24BIT); // this is to enable the two EXG Chips on the Shimmer3
-            double samplingRate = 51.2;
+            double samplingRate = 256;
+            ECG_To_HR_and_RR = new ECGToHRAdaptive(SamplingRate);
             //byte[] defaultECGReg1 = new byte[10] { 0x00, 0xA0, 0x10, 0x40, 0x40, 0x2D, 0x00, 0x00, 0x02, 0x03 }; //see ShimmerBluetooth.SHIMMER3_DEFAULT_ECG_REG1
             //byte[] defaultECGReg2 = new byte[10] { 0x00, 0xA0, 0x10, 0x40, 0x47, 0x00, 0x00, 0x00, 0x02, 0x01 }; //see ShimmerBluetooth.SHIMMER3_DEFAULT_ECG_REG2
             byte[] defaultECGReg1 = ShimmerBluetooth.SHIMMER3_DEFAULT_TEST_REG1; //also see ShimmerBluetooth.SHIMMER3_DEFAULT_ECG_REG1 && ShimmerBluetooth.SHIMMER3_DEFAULT_EMG_REG1
@@ -41,6 +46,7 @@ namespace ShimmerConsoleAppExample
             //shimmer = new ShimmerLogAndStreamSystemSerialPort("ShimmerID1", "COM5", samplingRate, 0, 4, enabledSensors, false, false, false, 0, 0, defaultECGReg1, defaultECGReg2, false);
             shimmer = new ShimmerLogAndStreamSystemSerialPort("ShimmerID1", "COM5", samplingRate, 0, 4, enabledSensors, true, true, true, 0, 0, defaultECGReg1, defaultECGReg2, false);
             shimmer.UICallback += this.HandleEvent;
+            
             shimmer.Connect();
             if (shimmer.GetState() == ShimmerBluetooth.SHIMMER_STATE_CONNECTED)
             {
@@ -98,8 +104,14 @@ namespace ShimmerConsoleAppExample
                     break;
                 case (int)ShimmerBluetooth.ShimmerIdentifier.MSG_IDENTIFIER_DATA_PACKET:
                     ObjectCluster objectCluster = (ObjectCluster)eventArgs.getObject();
+                    SensorData dataTS = objectCluster.GetData(IndexTimeStamp);
                     //SensorData data = objectCluster.GetData(Shimmer3Configuration.SignalNames.EXG1_CH1_16BIT, "CAL");
-                    SensorData data = objectCluster.GetData(Shimmer3Configuration.SignalNames.EXG1_CH1, "CAL");
+                    //SensorData data = objectCluster.GetData(Shimmer3Configuration.SignalNames.EXG1_CH1, "CAL");
+                    SensorData[] data = new SensorData[3];
+                    data[0] = objectCluster.GetData(Shimmer3Configuration.SignalNames.ECG_LA_RA, "CAL");
+                    data[1] = objectCluster.GetData(Shimmer3Configuration.SignalNames.ECG_LL_RA, "CAL");
+                    data[2] = objectCluster.GetData(Shimmer3Configuration.SignalNames.ECG_VX_RL, "CAL");
+                    ECGToHRAdaptive.DataECGToHROutputArray output = ECG_To_HR_and_RR.ecgToHrConversionWithRR(data, dataTS);
 
                     System.Console.WriteLine("EXG Channel 1: " + data.Data);
                     logging.WriteData(objectCluster);

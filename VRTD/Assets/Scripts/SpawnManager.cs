@@ -5,10 +5,9 @@ using PathologicalGames;
 
 public class SpawnManager : MonoBehaviour
 {
-    int ENEMY_COUNT_INCREASE = 3;
-    float ENEMY_DELAY_FACTOR = 5;
-    public GameObject enemy;
-    public GameObject enemy2;
+    public GameObject slowZombie;
+    public GameObject fastZombie;
+    public GameObject crawlerZombie;
     private List<GameObject> spawnables = new List<GameObject>();
     public GameObject[] torches;
     public Vector3[] SpawnPoints;
@@ -24,10 +23,7 @@ public class SpawnManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        spawnables.Add(enemy);
-        UpdateValues();
-        maxAtOnce = 15;
-
+        // Assign Torch refrences so that zombies can target them
         torches = new GameObject[4];
         int idx = 0;
         foreach (Torch torch in FindObjectsOfType<Torch>())
@@ -44,33 +40,12 @@ public class SpawnManager : MonoBehaviour
         if (SpawnEnabled)
         {
             spawnTimer += Time.deltaTime;
-
-            if (num_Spawned == EnemyCount && aliveNow == 0)
-            {
-                Debug.Log("Round " + RoundNumber + " complete. ");
-                IncrementRound();
-            }
-
-            if (spawnTimer >= SpawnDelay && num_Spawned < EnemyCount && aliveNow < maxAtOnce)
+            if (spawnTimer >= SpawnDelay && aliveNow < maxAtOnce)
             {
                 SpawnZombie();
                 spawnTimer = 0f;
             }
         }
-    }
-
-    public void IncrementRound()
-    {
-        RoundNumber++;
-        UpdateValues();
-    }
-
-    void UpdateValues()
-    {
-        EnemyCount = RoundNumber * ENEMY_COUNT_INCREASE;
-        SpawnDelay = ENEMY_DELAY_FACTOR / RoundNumber;
-        num_Spawned = 0;
-        aliveNow = 0;
     }
 
     void SpawnZombie()

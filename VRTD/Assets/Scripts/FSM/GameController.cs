@@ -22,11 +22,14 @@ public class GameController : MonoBehaviour
         Simple, // ECG data only
         Complex // ECG + GSR (NYI)
     };
-    public SensorMode CurrentSensorMode = SensorMode.Manual;
+    public SensorMode CurrentSensorMode = SensorMode.Complex;
 
     public float TimeInState;   // Time since last state transition.
     public float RestingHR;     // Player's approx resting heartrate.
     public float CurrentHR;     // Player's current heartrate.
+    public double RestingGSR;   // Player's approx resting GSR.
+    public double CurrentGSR;   // Player's current GSR.
+
     public float ComplexMetric; // A metric based on HR and GSR
 
     // States we can use for the FSM
@@ -53,17 +56,23 @@ public class GameController : MonoBehaviour
         if (CurrentSensorMode != SensorMode.Manual)
         {
             int read_hr = -1;
+            double read_GSR = 0;
+            string sep = "\t";
 
             try
             {
-                read_hr = Int32.Parse(File.ReadLines(path).Last());
+                string input = File.ReadLines(path).Last();
+                string[] splitInput = input.Split(sep.ToCharArray());
+
+                read_hr = Int32.Parse(splitInput[0]);
+                read_GSR = Double.Parse(splitInput[1]);
             }
             catch (IOException)
             {
                 // Data File was open by ShimmerAPI, pass
             }
 
-            Debug.Log("Heart Rate: " + read_hr + " BPM");
+            Debug.Log("Heart Rate: " + read_hr + " BPM | GSR: " + read_GSR + " kOhms");
             if (read_hr != -1)
             {
                 CurrentHR = read_hr;
