@@ -3487,6 +3487,7 @@ MonoBehaviour:
     type: 3}
   crawlerZombie: {fileID: 4259202388077954028, guid: 2d369b5c433194e47a7f3dc1662971a8,
     type: 3}
+  spawnables: []
   torches: []
   SpawnPoints:
   - {x: 14, y: 0, z: 14}

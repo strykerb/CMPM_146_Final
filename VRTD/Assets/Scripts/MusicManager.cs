@@ -20,6 +20,13 @@ public class MusicManager : MonoBehaviour
     float fadePercent = 0.0f; // Percent completion of a crossfade operation
     bool isCrossfading = false;
 
+    // Spatial Stressors
+    bool useSpatialStressors = false;
+    float timeBetweenStressors = 10.0f;
+    float timeSinceLastStressor = 0.0f;
+    float stressorIntervalVariance = 2.0f;
+    float currentStressorInterval = 0.0f;
+
     // Awake is called before the game starts. We need to setup everything before the controller references it
     void Awake()
     {
@@ -67,6 +74,11 @@ public class MusicManager : MonoBehaviour
                 audioSources[0].Play();
                 break;
         }
+    }
+
+    public void PlayStressor(int state)
+    {
+        
     }
 
     // Fade from current main clip to new state clip
@@ -128,9 +140,11 @@ public class MusicManager : MonoBehaviour
         fileNames = Directory.GetFiles(soundDirectory, "*.wav");
         BuildUpPreludes = new AudioClip[fileNames.Length];
         idx = 0;
+        Debug.Log(soundDirectory);
         foreach (string file in fileNames)
         {
             BuildUpPreludes[idx] = Resources.Load<AudioClip>(Path.Combine(targetDir, "Prelude", Path.GetFileNameWithoutExtension(file)));
+            Debug.Log(BuildUpPreludes[idx]);
             idx++;
         }
 
@@ -138,19 +152,23 @@ public class MusicManager : MonoBehaviour
         fileNames = Directory.GetFiles(soundDirectory, "*.wav");
         BuildUpMusic = new AudioClip[fileNames.Length];
         idx = 0;
+        Debug.Log(soundDirectory);
         foreach (string file in fileNames)
         {
             BuildUpMusic[idx] = Resources.Load<AudioClip>(Path.Combine(targetDir, "Background", Path.GetFileNameWithoutExtension(file)));
+            Debug.Log(BuildUpMusic[idx]);
             idx++;
         }
 
         soundDirectory = Path.Combine(Application.dataPath, "Resources", targetDir, "Effects");
         fileNames = Directory.GetFiles(soundDirectory, "*.wav");
         BuildUpSounds = new AudioClip[fileNames.Length];
+        Debug.Log(soundDirectory);
         idx = 0;
         foreach (string file in fileNames)
         {
-            BuildUpSounds[idx] = Resources.Load<AudioClip>(Path.Combine(targetDir, "Background", Path.GetFileNameWithoutExtension(file)));
+            BuildUpSounds[idx] = Resources.Load<AudioClip>(Path.Combine(targetDir, "Effects", Path.GetFileNameWithoutExtension(file)));
+            Debug.Log(BuildUpSounds[idx]);
             idx++;
         }
     }
@@ -168,6 +186,24 @@ public class MusicManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (useSpatialStressors)
+        {
+            if (currentStressorInterval == 0.0f) // Set the next interval, if it's not already set
+            {
+                Debug.Log("Setting interval");
+                currentStressorInterval = timeBetweenStressors + Random.Range(-stressorIntervalVariance, stressorIntervalVariance);
+            }
+
+            timeSinceLastStressor += Time.deltaTime;
+            if (timeSinceLastStressor > currentStressorInterval)
+            {
+                Debug.Log("Activating");
+                timeSinceLastStressor = 0.0f;
+                currentStressorInterval = 0.0f;
+                ActivateSpatialStressor();
+            }
+        }
+
         if (isCrossfading)
         {
             // Get current percent of time spent fading, and set
@@ -180,5 +216,37 @@ public class MusicManager : MonoBehaviour
             // Shift new clip over to main when done
             if (audioSources[0].volume <= 0.0f) FinishCrossFade();
         }
+    }
+
+    // Spatial Stressors
+    
+    // Toggle on/off
+    public void ToggleSpatialStressors()
+    {
+        useSpatialStressors = !useSpatialStressors;
+    }
+
+    // Set spatial stressor usage
+    public void SetSpatialStressorsOn(bool on)
+    {
+        useSpatialStressors = on;
+    }
+
+    // Change frequency
+    public void SetTimeBetweenStressors(float interval)
+    {
+        timeBetweenStressors = interval;
+    }
+
+    // Force spatial stressor one-shot
+    public void ActivateSpatialStressor()
+    {
+        GameObject stressorObj = new GameObject();
+        stressorObj.name = "Spatial Stressor";
+        stressorObj.AddComponent<SpatialStressor>();
+        // Activate with a random build-up sound
+        AudioClip clipToPlay = BuildUpSounds[(int)(Mathf.Floor(Random.Range(0.0f, BuildUpSounds.Length - 1)))];
+        Debug.Log(clipToPlay.name);
+        stressorObj.GetComponent<SpatialStressor>().clip = clipToPlay;
     }
 }

@@ -10,8 +10,10 @@ public class GameBuildupState : GameBaseState
     public override void EnterState(GameController controller)
     {
         Debug.Log("Building up.");
+        prelude_concluded = false;
         controller.Spawner.SetSpawnEnabled(true);
         controller.Jukebox.PlayMusic(1);
+        controller.Jukebox.SetSpatialStressorsOn(true);
         controller.FindRestingHR();
         TargetMul = 1.2f;
         TargetHR = controller.RestingHR * TargetMul;

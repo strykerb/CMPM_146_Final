@@ -8,7 +8,7 @@ public class SpawnManager : MonoBehaviour
     public GameObject slowZombie;
     public GameObject fastZombie;
     public GameObject crawlerZombie;
-    private List<GameObject> spawnables = new List<GameObject>();
+    public List<GameObject> spawnables = new List<GameObject>();
     public GameObject[] torches;
     public Vector3[] SpawnPoints;
     public float SpawnDelay;
