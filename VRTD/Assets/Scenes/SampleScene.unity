@@ -473,13 +473,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Spawner: {fileID: 1956775593}
   Jukebox: {fileID: 924332046}
-  CurrentSensorMode: 0
+  CurrentSensorMode: 2
   TimeInState: 0
+  StressCount: 0
+  Stressed: 0
   RestingHR: 0
   CurrentHR: 0
+  PreviousHR: 0
   RestingGSR: 0
   CurrentGSR: 0
-  ComplexMetric: 0
+  PreviousGSR: 0
 --- !u!1 &257649512
 GameObject:
   m_ObjectHideFlags: 0

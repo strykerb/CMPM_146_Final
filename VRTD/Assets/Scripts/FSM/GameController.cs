@@ -24,15 +24,24 @@ public class GameController : MonoBehaviour
     };
     public SensorMode CurrentSensorMode = SensorMode.Manual;
 
-    public float TimeInState;   // Time since last state transition.
-    public float RestingHR;     // Player's approx resting heartrate.
-    public float CurrentHR;     // Player's current heartrate.
-    public double RestingGSR;   // Player's approx resting GSR.
-    public double CurrentGSR;   // Player's current GSR.
+    public float TimeInState;       // Time since last state transition.
+    public int StressCount;         // A tally of stressed readings based on HR and GSR
+    public bool Stressed;           // boolean that defines if the player is actively stresed
+    static float TimeFrame = 2f;    // how long each window is for averaging & combining signals
+    float TimeInWindow;
+    public Queue<bool> StressHistory = new Queue<bool>();   // Past Stress readings. length determined by HistoryDepth
+    static int HistoryDepth = 5;    // BuildUp transition looks at past 5 stress readings
 
-    public float ComplexMetric; // A metric based on HR and GSR
+    public float RestingHR;         // Player's approx resting heartrate.
+    public float CurrentHR;         // Player's current heartrate.
+    public float PreviousHR;        // HR from last time frame
+    
+    public double RestingGSR;       // Player's approx resting GSR.
+    public double CurrentGSR;       // Player's current GSR.
+    public double PreviousGSR;      // HR from last time frame
 
     // States we can use for the FSM
+    public BaselineState Baseline = new BaselineState();
     public GameRestState RestState = new GameRestState();
     public GameBuildupState BuildupState = new GameBuildupState();
     public GameClimaxState ClimaxState = new GameClimaxState();
@@ -44,43 +53,21 @@ public class GameController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        TransitionToState(RestState);
+        TransitionToState(Baseline);
     }
 
     // Update is called once per frame
     void Update()
     {
         TimeInState += Time.deltaTime;
-
-        // Read sensor data when not in manual mode
-        if (CurrentSensorMode != SensorMode.Manual)
+        // Read sensor data when in complex mode
+        if (CurrentSensorMode == SensorMode.Complex)
         {
-            int read_hr = -1;
-            double read_GSR = 0;
-            string sep = "\t";
+            TimeInWindow += Time.deltaTime;
 
-            try
-            {
-                string input = File.ReadLines(path).Last();
-                string[] splitInput = input.Split(sep.ToCharArray());
-
-                read_hr = Int32.Parse(splitInput[0]);
-                read_GSR = Double.Parse(splitInput[1]);
-            }
-            catch (IOException)
-            {
-                // Data File was open by ShimmerAPI, pass
-            }
-
-            Debug.Log("Heart Rate: " + read_hr + " BPM | GSR: " + read_GSR + " kOhms");
-            if (read_hr != -1)
-            {
-                CurrentHR = read_hr;
-
-                // With HR found, get complex metric this frame
-                if (CurrentSensorMode == SensorMode.Complex) ComputeComplexMetric();
-            }
-
+            // If a full time frame has passed, update values based on sensor data
+            if (TimeInWindow > TimeFrame)
+                ComputeStressComplex();
         }
 
         CurrentState.Update(this);
@@ -130,11 +117,101 @@ public class GameController : MonoBehaviour
 
     public void FindRestingHR()
     {
-        RestingHR = Mathf.Min(60.0f, CurrentHR); // Hardcoded until we have sensor data.
+        StartCoroutine(FindBaselineSensorValues());
     }
 
-    private void ComputeComplexMetric() // Gets a metric based on HR and GSR data for Complex readings.
+    public IEnumerator FindBaselineSensorValues()
     {
-        ComplexMetric = 0.0f;
+        RestingHR = 0;
+        RestingGSR = 0;
+
+        // How many data sections to average to generate resting values
+        int BaselineIterations = 5;
+
+        for (int i = 0; i < BaselineIterations; i++)
+        {
+            yield return new WaitForSeconds(TimeFrame);
+            RestingHR += CurrentHR;
+            RestingGSR += CurrentGSR;
+        }
+
+        Debug.Log("baseline values found");
+        RestingHR /= BaselineIterations;
+        RestingGSR /= BaselineIterations;
+
+        yield return true;
+    }
+
+    
+    private void ComputeStressComplex() // Gets a metric based on HR and GSR data for Complex readings.
+    {
+        float read_hr = -1;
+        double read_GSR = 0;
+        string sep = "\t";
+        string[] input;
+        TimeInWindow = 0;
+
+        try
+        {
+            input = File.ReadAllLines(path);
+
+            // Average all readings from this window
+            foreach (string line in input)
+            {
+                string[] splitInput = line.Split(sep.ToCharArray());
+                if (float.Parse(splitInput[0]) == -1)
+                    read_hr = PreviousHR;
+                else
+                    read_hr += float.Parse(splitInput[0]);
+                read_GSR += Double.Parse(splitInput[1]);
+            }
+            read_hr /= input.Length;
+            read_GSR /= input.Length;
+
+            // Erase the contents of the input file
+            File.WriteAllText(path, String.Empty);
+        }
+        catch (IOException)
+        {
+            // Data File was open by ShimmerAPI, pass
+        }
+
+        // Store previous data
+        PreviousGSR = CurrentGSR;
+        PreviousHR = CurrentHR;
+        
+        // Update new sensor data
+        CurrentHR = read_hr;
+        CurrentGSR = read_GSR;
+
+        Debug.Log("Heart Rate: " + CurrentHR + " BPM | GSR: " + CurrentGSR + " kOhms");
+
+        float HR_diff = CurrentHR - PreviousHR;
+        double GSR_diff = CurrentGSR - PreviousGSR;
+        
+        // tallies up all stress indicators to estimate if player is stressed
+        StressCount = 0;
+
+        if (CurrentHR / RestingHR > 1.35)
+            StressCount += 3;       // 35% increase in HR from rest weighs more towards stress calculation
+        if (HR_diff > 5)
+            StressCount += 1;       // > 5 bpm increase from last window slightly increases stress count 
+        if (CurrentGSR / RestingGSR < 0.7)
+            StressCount += 3;       // 30% decrease in GSR from rest weighs more towards stress calculation
+        if (GSR_diff < -20)
+            StressCount += 1;       // > 20 kOhms decrease from last window slightly increases stress count 
+
+        // If stresscount is greater than or equal to four, player is stressed.
+        // This means being stressed requires at least one important indicator 
+        // and one insignificant indicator to return true in order to be evaluated true
+        Stressed = (StressCount>=4);
+        
+        // Maintain a stress history of length (HistoryDepth)
+        StressHistory.Enqueue(Stressed);
+        if (StressHistory.Count >= HistoryDepth)
+        {
+            StressHistory.Dequeue();
+        }
+        Debug.Log("Stressed: " + Stressed);
     }
 }

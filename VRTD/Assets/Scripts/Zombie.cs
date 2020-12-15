@@ -8,30 +8,31 @@ using PathologicalGames;
 public class Zombie : Character
 {
     Animator anim;
-    Vector3 goal;
-    GameObject[] torches;
+    Vector3 goal;                           // Coordinate that the navmesh agent moves towards
+    GameObject[] torches;                   // candidates for goal
     NavMeshAgent agent;
-    private SpawnManager spawnManager;
+    private SpawnManager spawnManager;      // so that we can access torch [] without FindObj... for each zombie
     FireSource fire;
-    public AudioClip[] sounds;
-    public AudioClip[] deathSounds;
+    public AudioClip[] sounds;              // Assigned in editor
+    public AudioClip[] deathSounds;         // Assigned in editor
     AudioSource zombie_audio;
-    GameObject target;
-    CapsuleCollider hitbox;
-    CapsuleCollider fireHitbox;
+    GameObject target;                      // Reference to the closest torch, coords -> goal
+    CapsuleCollider hitbox;                 // hitbox for arrow collisions
+    CapsuleCollider fireHitbox;             // hitbox for fire collisions, slightly larger than ^
 
-    public bool dead;
-    bool hasDealtDamage;
-    float attackTimer;
-    float soundTimer;
+    public bool dead;                       // Ensures that it only dies once
+    bool isAttacking;                       // Used for animation logic
+    bool hasDealtDamage;                    // Ensures that it only damages target once per animation
+    float attackTimer;                      // Countdown until damage is dealt
+    float soundTimer;                       // time until next zombie noise 
     public float SPEED;
     public int MAX_HEALTH;
 
     // This distance seems to look natural
     float stopping_dist = 1f;
     
-    bool isAttacking;
-
+    
+    // called instead of Start() due to prefab Cloning/Reusing
     protected override void Initialize()
     {
         // Just Assigning refrences
@@ -90,6 +91,7 @@ public class Zombie : Character
         return closest_torch;
     }
 
+    // Directs navmesh agent to new goal
     void SetDestination()
     {
         target = FindTarget();
@@ -99,23 +101,6 @@ public class Zombie : Character
             agent.destination = goal;
         }
         agent.isStopped = false;
-    }
-
-    void ResetAnimations()
-    {
-        anim.SetBool("FireDeath", false);
-        anim.SetBool("ProjectileDeath", false);
-        anim.SetBool("doAttack1", false);
-        anim.SetBool("doAttack2", false);
-    }
-
-    void removeArrows()
-    {
-        Arrow[] arrows = GetComponentsInChildren<Arrow>();
-        for (int i = 0; i < arrows.Length; i++)
-        {
-            Destroy(arrows[i]);
-        }
     }
 
     protected override void Enabled()
@@ -131,7 +116,7 @@ public class Zombie : Character
     protected override void OnUpdate()
     {
 
-        // Despawn if all torches are destroyed
+        // Despawn zombie if all torches are destroyed
         if (target == null)
         {
             PoolManager.Pools["Enemies"].Despawn(this.transform, 3.5f);
@@ -140,14 +125,18 @@ public class Zombie : Character
 
         soundTimer -= Time.deltaTime;
 
+        // if on fire, take 1 damage per frame
         if (fire.isBurning && getHealth() >= 1)
         {
             setHealth(getHealth() - 1);
         }
 
+        // Handle zombie death
         if (!dead && getHealth() <= 0)
         {
             agent.isStopped = true;
+            
+            // different animations for different causes of death
             if (fire.isBurning)
             {
                 anim.SetBool("FireDeath", true);
@@ -184,11 +173,13 @@ public class Zombie : Character
                 attack();
         }
 
+        // time to groan
         if (soundTimer < 0)
         {
             MakeSound();
         }
 
+        // we are close to target. Transition from walking to attacking
         if (!isAttacking && Vector3.Distance(this.transform.position, goal) < stopping_dist)
         {
             BeginAttack();
@@ -197,6 +188,7 @@ public class Zombie : Character
 
     private void OnCollisionEnter(Collision collision)
     {
+        // We have been struck by an arrow; take 100 damage
         if (collision.gameObject.CompareTag("projectile"))
         {
             setHealth(getHealth() - 100);
@@ -210,7 +202,8 @@ public class Zombie : Character
     {
         attackTimer = 0;
         hasDealtDamage = false;
-        if (Random.Range(0,1) > 0)
+        // this does not work, it just plays one animation. Likely an AC issue.
+        if (Random.Range(0,1) > 0.5)
         {
             anim.SetBool("doAttack2", true);
             anim.SetBool("doAttack1", false);
