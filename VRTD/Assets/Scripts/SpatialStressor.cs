@@ -41,7 +41,9 @@ public class SpatialStressor : MonoBehaviour
     {
         source = GetComponentInParent<AudioSource>();
         source.spatialize = true;
-        source.PlayOneShot(clip, 0.5f);
+        source.spatialBlend = 1.0f;
+        source.minDistance = 10.0f;
+        source.PlayOneShot(clip);
         timeToExist = clip.length;
         hasActivated = true;
     }
