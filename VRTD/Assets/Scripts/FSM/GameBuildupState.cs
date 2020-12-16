@@ -36,7 +36,7 @@ public class GameBuildupState : GameBaseState
         {
             controller.TransitionToState(controller.ClimaxState);
         }
-        else if (GetStressCount(controller) < 3) // If the player is still sufficiently relaxed, we want to increase our spawns
+        else if (!controller.Stressed) // If the player is still sufficiently relaxed, we want to increase our spawns
         {
             increaseSpawns = true;
         }
@@ -90,6 +90,7 @@ public class GameBuildupState : GameBaseState
         return (stress_count >= TransitionThreshold);
     }
 
+    // Deprecated, will be phased out with ML implementation
     private int GetStressCount(GameController controller)
     {
         int stress_count = 0;
