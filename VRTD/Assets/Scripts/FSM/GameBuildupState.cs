@@ -7,6 +7,9 @@ public class GameBuildupState : GameBaseState
     public float maxPreludeDuration = 30f;          // Max Length of transition time between rest and scare
     bool prelude_concluded = false;
     int TransitionThreshold = 4;                    // stress reading count over last 5 windows required for transition
+    public bool increaseSpawns = false;
+    float timeSinceSpawnIncrease = 0.0f;
+    float timeBetweenSpawnIncreases = 3.0f;
 
     public override void EnterState(GameController controller)
     {
@@ -32,6 +35,24 @@ public class GameBuildupState : GameBaseState
         if (CheckGoalReached(controller))
         {
             controller.TransitionToState(controller.ClimaxState);
+        }
+        else if (GetStressCount(controller) < 3) // If the player is still sufficiently relaxed, we want to increase our spawns
+        {
+            increaseSpawns = true;
+        }
+
+        // If we've flagged for a spawn increase, we need to update the time since the last spawn increase
+        // to prevent everything from going nuts
+        if (increaseSpawns)
+        {
+            timeSinceSpawnIncrease += Time.deltaTime;
+            // If sufficient time has passed, reduce the spawn delay by 5% and update markers
+            if (timeSinceSpawnIncrease >= timeBetweenSpawnIncreases)
+            {
+                controller.ModifySpawnFrequency(controller.GetSpawnFrequency() * 0.95f);
+                increaseSpawns = false;
+                timeSinceSpawnIncrease = 0.0f;
+            }
         }
 
         // Give a buffer between rest and maximum spawn. End buffer at first stressed reading.
@@ -64,17 +85,21 @@ public class GameBuildupState : GameBaseState
         if (controller.CurrentSensorMode != GameController.SensorMode.Complex)
             return false;
 
-        int stress_count = 0;
+        int stress_count = GetStressCount(controller);
 
-        // if four out of the last five sensor readings indicate the player 
-        // is relaxed, transition to build up.
-        foreach (bool stressed in controller.StressHistory)
+        return (stress_count >= TransitionThreshold);
+    }
+
+    private int GetStressCount(GameController controller)
+    {
+        int stress_count = 0;
+        foreach(bool stressed in controller.StressHistory)
         {
             if (stressed)
                 stress_count += 1;
         }
 
-        return (stress_count >= TransitionThreshold);
+        return stress_count;
     }
 
 

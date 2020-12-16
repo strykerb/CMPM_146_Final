@@ -97,9 +97,15 @@ public class GameController : MonoBehaviour
     }
 
     // Update spawn frequency
-    public void ModifySpawnFrequency(int NewRate)
+    public void ModifySpawnFrequency(float NewRate)
     {
-        Spawner.SpawnDelay = NewRate;
+        Spawner.SpawnDelay = Mathf.Max(1.0f, NewRate);
+    }
+
+    // Get spawn frequency for changes
+    public float GetSpawnFrequency()
+    {
+        return Spawner.SpawnDelay; 
     }
 
     // Update max enemies
