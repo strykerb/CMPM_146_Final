@@ -10,15 +10,22 @@ public class GameClimaxState : GameBaseState
         MaxTimeInState = 5.0f;
         controller.Jukebox.PlayMusic(2);
 
-        Debug.Log("Climax Removal: " + controller.RemoveEnemyFromPool(controller.Spawner.slowZombie));
+        //Debug.Log("Climax Removal: " + controller.RemoveEnemyFromPool(controller.Spawner.slowZombie));
         controller.ModifySpawnFrequency(5);
     }
 
     public override void Update(GameController controller)
     {
-        if (CheckGoalReached(controller.RestingHR, controller.CurrentHR, controller.TimeInState))
+        if (CheckGoalReached(controller))
         {
             controller.TransitionToState(controller.CooldownState);
         }
+    }
+
+    public override bool CheckGoalReached(GameController controller)
+    {
+        if (controller.TimeInState > MaxTimeInState)
+            return true;
+        return false;
     }
 }

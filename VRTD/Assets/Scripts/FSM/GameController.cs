@@ -53,6 +53,21 @@ public class GameController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
+        /*
+        * When HR sensor reads -1, we don't have a HR signal for
+        * that data packet. We compensate by setting the HR for
+        * that interval to be equal to the previous average HR.
+        * On our first reading, however, PreviousHR has not been
+        * written to, so we default it to 60 bpm, a normal resting
+        * heart rate.
+        */
+        PreviousHR = 60;
+
+        // Clear irrelevant data from input file
+        File.WriteAllText(path, String.Empty);
+
+        // Start game in the baseline state to record resting sensor data
         TransitionToState(Baseline);
     }
 
@@ -126,7 +141,7 @@ public class GameController : MonoBehaviour
         RestingGSR = 0;
 
         // How many data sections to average to generate resting values
-        int BaselineIterations = 5;
+        int BaselineIterations = 10;
 
         for (int i = 0; i < BaselineIterations; i++)
         {
@@ -160,7 +175,7 @@ public class GameController : MonoBehaviour
             {
                 string[] splitInput = line.Split(sep.ToCharArray());
                 if (float.Parse(splitInput[0]) == -1)
-                    read_hr = PreviousHR;
+                    read_hr += PreviousHR;
                 else
                     read_hr += float.Parse(splitInput[0]);
                 read_GSR += Double.Parse(splitInput[1]);
@@ -192,14 +207,18 @@ public class GameController : MonoBehaviour
         // tallies up all stress indicators to estimate if player is stressed
         StressCount = 0;
 
-        if (CurrentHR / RestingHR > 1.35)
-            StressCount += 3;       // 35% increase in HR from rest weighs more towards stress calculation
+        if (CurrentHR / RestingHR > 1.3)
+            StressCount += 4;       // 40% increase in HR from rest weighs more towards stress calculation
+        else if (CurrentHR / RestingHR > 1.2)
+            StressCount += 3;
+        else if (CurrentHR / RestingHR > 1.1)
+            StressCount += 2;
         if (HR_diff > 5)
             StressCount += 1;       // > 5 bpm increase from last window slightly increases stress count 
-        if (CurrentGSR / RestingGSR < 0.7)
-            StressCount += 3;       // 30% decrease in GSR from rest weighs more towards stress calculation
-        if (GSR_diff < -20)
-            StressCount += 1;       // > 20 kOhms decrease from last window slightly increases stress count 
+        if (GSR_diff < -10)
+            StressCount += 3;       // > 10 kOhms decrease from last window greatly increases stress count 
+        if (CurrentGSR - RestingGSR < -50)
+            StressCount += 2;       // 50 kOhm decrese in GSR from rest weighs slightly towards stress calculation
 
         // If stresscount is greater than or equal to four, player is stressed.
         // This means being stressed requires at least one important indicator 
@@ -213,5 +232,6 @@ public class GameController : MonoBehaviour
             StressHistory.Dequeue();
         }
         Debug.Log("Stressed: " + Stressed);
+        Debug.Log("Stressed Count: " + StressCount);
     }
 }

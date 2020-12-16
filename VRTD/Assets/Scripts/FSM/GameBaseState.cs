@@ -15,27 +15,6 @@ public abstract class GameBaseState
 
     public abstract void EnterState(GameController controller);
     public abstract void Update(GameController controller);
-
-    public bool CheckGoalReached(float RestingHeartRate, float CurrentHeartRate, float Time)
-    {
-        // Check time regardless of heartrate
-        if (Time >= MaxTimeInState)
-        {
-            return true;
-        }
-
-        // Only check heartrate if heartrate is our goal
-        if (TargetHR > 0.0f && TargetMul > 0.0f)
-        {
-            if (CurrentHeartRate >= MaxHR ||                        // Reached maximum allowed heartrate
-                CurrentHeartRate >= TargetHR ||                     // Reached target heartrate
-                CurrentHeartRate >= RestingHeartRate * TargetMul)   // Reached target multiplier
-            {
-                return true;
-            }
-        }
-
-        // No goals reached for transition
-        return false;
-    }
+    public abstract bool CheckGoalReached(GameController controller);
+    
 }

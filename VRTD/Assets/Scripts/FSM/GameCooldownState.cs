@@ -15,11 +15,19 @@ public class GameCooldownState : GameBaseState
 
     public override void Update(GameController controller)
     {
-        // Update kills remaining
-        KillsLeft = controller.Spawner.GetNumAlive();
-        if (KillsLeft <= 0)
+        if (CheckGoalReached(controller))
         {
             controller.TransitionToState(controller.RestState);
         }
+    }
+
+    public override bool CheckGoalReached(GameController controller)
+    {
+
+        // Update kills remaining
+        KillsLeft = controller.Spawner.GetNumAlive();
+        if (KillsLeft <= 0)
+            return true;
+        return false;
     }
 }
