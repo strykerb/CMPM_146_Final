@@ -475,8 +475,9 @@ MonoBehaviour:
   Jukebox: {fileID: 924332046}
   CurrentSensorMode: 2
   TimeInState: 0
-  StressCount: 0
   Stressed: 0
+  HRThreshold: 12
+  GSRThreshold: 15
   RestingHR: 0
   CurrentHR: 0
   PreviousHR: 0

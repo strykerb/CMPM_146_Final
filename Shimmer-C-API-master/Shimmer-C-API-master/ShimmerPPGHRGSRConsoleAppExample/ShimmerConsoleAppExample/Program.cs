@@ -122,18 +122,18 @@ namespace ShimmerConsoleAppExample
                     int heartRate = (int)Math.Round(PPGtoHeartRateCalculation.ppgToHrConversion(dataFilteredHP, dataTS.Data));
 
                     // Write data to String Builder
-                    var newLine = string.Format("{0},{1}", heartRate.ToString(), dataGSR.Data);
-                    csv.AppendLine(newLine);
-                    //txt.AppendLine(heartRate.ToString() + "\t" + dataGSR.Data);
+                    //var newLine = string.Format("{0},{1}", heartRate.ToString(), dataGSR.Data);
+                    //csv.AppendLine(newLine);
+                    txt.AppendLine(heartRate.ToString() + "\t" + dataGSR.Data);
 
                     if (Count % (SamplingRate / 2) == 0) //only display data every half-second
                     {
                         System.Console.WriteLine("AccelX: " + datax.Data + " " + datax.Unit + " AccelY: " + datay.Data + " " + datay.Unit + " AccelZ: " + dataz.Data + " " + dataz.Unit);
                         System.Console.WriteLine("Time Stamp: " + dataTS.Data + " " + dataTS.Unit + " GSR: " + dataGSR.Data + " " + dataGSR.Unit + " PPG: " + dataPPG.Data + " " + dataPPG.Unit + " HR: " + heartRate + " BPM");
-                        //File.AppendAllText(output, txt.ToString());
-                        File.AppendAllText(csv_output, csv.ToString());
-                        //txt.Clear();
-                        csv.Clear();
+                        File.AppendAllText(output, txt.ToString());
+                        //File.AppendAllText(csv_output, csv.ToString());
+                        txt.Clear();
+                        //csv.Clear();
                     }
                     Count++;
                     break;

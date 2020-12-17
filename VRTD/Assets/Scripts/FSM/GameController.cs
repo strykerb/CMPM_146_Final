@@ -25,12 +25,13 @@ public class GameController : MonoBehaviour
     public SensorMode CurrentSensorMode = SensorMode.Manual;
 
     public float TimeInState;       // Time since last state transition.
-    public int StressCount;         // A tally of stressed readings based on HR and GSR
     public bool Stressed;           // boolean that defines if the player is actively stresed
     static float TimeFrame = 2f;    // how long each window is for averaging & combining signals
     float TimeInWindow;
     public Queue<bool> StressHistory = new Queue<bool>();   // Past Stress readings. length determined by HistoryDepth
     static int HistoryDepth = 5;    // BuildUp transition looks at past 5 stress readings
+    [SerializeField] private float HRThreshold = 8;
+    [SerializeField] private double GSRThreshold = 20;
 
     public float RestingHR;         // Player's approx resting heartrate.
     public float CurrentHR;         // Player's current heartrate.
@@ -63,6 +64,9 @@ public class GameController : MonoBehaviour
         * heart rate.
         */
         PreviousHR = 60;
+        PreviousGSR = 600;
+        CurrentHR = 60;
+        CurrentGSR = 600;
 
         // Clear irrelevant data from input file
         File.WriteAllText(path, String.Empty);
@@ -160,6 +164,7 @@ public class GameController : MonoBehaviour
         RestingHR /= BaselineIterations;
         RestingGSR /= BaselineIterations;
 
+        Stressed = false;
         yield return true;
     }
 
@@ -205,31 +210,29 @@ public class GameController : MonoBehaviour
         CurrentHR = read_hr;
         CurrentGSR = read_GSR;
 
-        Debug.Log("Heart Rate: " + CurrentHR + " BPM | GSR: " + CurrentGSR + " kOhms");
-
         float HR_diff = CurrentHR - PreviousHR;
         double GSR_diff = CurrentGSR - PreviousGSR;
-        
-        // tallies up all stress indicators to estimate if player is stressed
-        StressCount = 0;
 
-        if (CurrentHR / RestingHR > 1.3)
-            StressCount += 4;       // 40% increase in HR from rest weighs more towards stress calculation
-        else if (CurrentHR / RestingHR > 1.2)
-            StressCount += 3;
-        else if (CurrentHR / RestingHR > 1.1)
-            StressCount += 2;
-        if (HR_diff > 5)
-            StressCount += 1;       // > 5 bpm increase from last window slightly increases stress count 
-        if (GSR_diff < -10)
-            StressCount += 3;       // > 10 kOhms decrease from last window greatly increases stress count 
-        if (CurrentGSR - RestingGSR < -50)
-            StressCount += 2;       // 50 kOhm decrese in GSR from rest weighs slightly towards stress calculation
+        Debug.Log("Previously stressed: " + Stressed + ". HR_diff: " + HR_diff + ". GSR_diff: " + GSR_diff + ". HR ratio: " + CurrentHR / RestingHR);
 
-        // If stresscount is greater than or equal to four, player is stressed.
-        // This means being stressed requires at least one important indicator 
-        // and one insignificant indicator to return true in order to be evaluated true
-        Stressed = (StressCount>=4);
+        if (!Stressed)
+        {
+            if (HR_diff > HRThreshold)
+                Stressed = true;
+            else if (GSR_diff < -GSRThreshold)
+                Stressed = true;
+            else if (CurrentHR / RestingHR > 1.2)
+                Stressed = true;
+        }
+        else
+        {
+            if (HR_diff < -HRThreshold/2)
+                Stressed = false;
+            else if (GSR_diff > GSRThreshold/2)
+                Stressed = false;
+            else if (CurrentHR / RestingHR <= 1.05)
+                Stressed = false;
+        }
         
         // Maintain a stress history of length (HistoryDepth)
         StressHistory.Enqueue(Stressed);
@@ -237,7 +240,6 @@ public class GameController : MonoBehaviour
         {
             StressHistory.Dequeue();
         }
-        Debug.Log("Stressed: " + Stressed);
-        Debug.Log("Stressed Count: " + StressCount);
+        Debug.Log("Heart Rate: " + CurrentHR + " BPM | GSR: " + CurrentGSR + " kOhms | Stressed: " + Stressed);
     }
 }
