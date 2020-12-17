@@ -19,7 +19,7 @@ namespace ShimmerConsoleAppExample
         double LPF_CORNER_FREQ_HZ = 5;
         double HPF_CORNER_FREQ_HZ = 0.5;
         ShimmerLogAndStreamSystemSerialPort Shimmer;
-        double SamplingRate = 128;
+        double SamplingRate = 64;
         int Count = 0;
         bool FirstTime = true;
 
@@ -33,10 +33,15 @@ namespace ShimmerConsoleAppExample
 
         // Path to output file
         static string output;
+        static string csv_output;
+
+        StringBuilder csv;
+        StringBuilder txt;
 
         static void Main(string[] args)
         {
             output = Path.Combine($@"{Directory.GetCurrentDirectory()}", @"..\..\..\..\..\..", @"VRTD\Assets\HRData\data.txt");
+            csv_output = Path.Combine($@"{Directory.GetCurrentDirectory()}", @"..\..\..\..\..\..", @"VRTD\Assets\HRData\data.csv");
             System.Console.WriteLine(output);
             System.Console.WriteLine("Hello");
             Program p = new Program();
@@ -49,7 +54,8 @@ namespace ShimmerConsoleAppExample
             PPGtoHeartRateCalculation = new PPGToHRAlgorithm(SamplingRate, NumberOfHeartBeatsToAverage, TrainingPeriodPPG);
             LPF_PPG = new Filter(Filter.LOW_PASS, SamplingRate, new double[] { LPF_CORNER_FREQ_HZ });
             HPF_PPG = new Filter(Filter.HIGH_PASS, SamplingRate, new double[] { HPF_CORNER_FREQ_HZ });
-
+            csv = new StringBuilder();
+            txt = new StringBuilder();
 
             int enabledSensors = ((int)ShimmerBluetooth.SensorBitmapShimmer3.SENSOR_A_ACCEL | (int)ShimmerBluetooth.SensorBitmapShimmer3.SENSOR_GSR | (int)ShimmerBluetooth.SensorBitmapShimmer3.SENSOR_INT_A13);
             //int enabledSensors = ((int)Shimmer.SensorBitmapShimmer3.SENSOR_A_ACCEL | (int)Shimmer.SensorBitmapShimmer3.SENSOR_EXG1_24BIT | (int)Shimmer.SensorBitmapShimmer3.SENSOR_EXG2_24BIT); 
@@ -115,17 +121,19 @@ namespace ShimmerConsoleAppExample
                     double dataFilteredHP = HPF_PPG.filterData(dataFilteredLP);
                     int heartRate = (int)Math.Round(PPGtoHeartRateCalculation.ppgToHrConversion(dataFilteredHP, dataTS.Data));
 
+                    // Write data to String Builder
+                    var newLine = string.Format("{0},{1}", heartRate.ToString(), dataGSR.Data);
+                    csv.AppendLine(newLine);
+                    //txt.AppendLine(heartRate.ToString() + "\t" + dataGSR.Data);
 
                     if (Count % (SamplingRate / 2) == 0) //only display data every half-second
                     {
                         System.Console.WriteLine("AccelX: " + datax.Data + " " + datax.Unit + " AccelY: " + datay.Data + " " + datay.Unit + " AccelZ: " + dataz.Data + " " + dataz.Unit);
                         System.Console.WriteLine("Time Stamp: " + dataTS.Data + " " + dataTS.Unit + " GSR: " + dataGSR.Data + " " + dataGSR.Unit + " PPG: " + dataPPG.Data + " " + dataPPG.Unit + " HR: " + heartRate + " BPM");
-                        //System.IO.File.WriteAllText(@"..\..\..\..\VRTD\Assets\HRData\data.txt", heartRate.ToString());
-                        using (StreamWriter sw = File.AppendText(output))
-                        {
-                            sw.WriteLine(heartRate.ToString() + "\t" + dataGSR.Data);
-                        }
-                        //System.IO.File.WriteAllText(@"C:\Users\stryk\Desktop\Game Files\CMPM_146_Final\VRTD\Assets\HRData\data.txt", heartRate.ToString());
+                        //File.AppendAllText(output, txt.ToString());
+                        File.AppendAllText(csv_output, csv.ToString());
+                        //txt.Clear();
+                        csv.Clear();
                     }
                     Count++;
                     break;
