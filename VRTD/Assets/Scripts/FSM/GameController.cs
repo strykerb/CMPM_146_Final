@@ -18,9 +18,10 @@ public class GameController : MonoBehaviour
     // What kind of sensor data are we using for the controller?
     public enum SensorMode
     {
-        Manual, // Dev input for testing
-        Simple, // ECG data only
-        Complex // ECG + GSR (NYI)
+        Manual,  // Dev input for testing
+        Simple,  // ECG data only
+        Complex, // ECG + GSR
+        ML       // Use machine learning model
     };
     public SensorMode CurrentSensorMode = SensorMode.Manual;
 
@@ -49,7 +50,10 @@ public class GameController : MonoBehaviour
     public GameCooldownState CooldownState = new GameCooldownState();
 
     // Path to Heart Rate Data File
-    string path = Path.Combine($@"{Directory.GetCurrentDirectory()}", @"Assets\HRData\data.txt");
+    string dataPath = Path.Combine($@"{Directory.GetCurrentDirectory()}", @"Assets\HRData\data.txt");
+
+    // Path to ML Prediction File
+    string mlPath = Path.Combine($@"{Directory.GetCurrentDirectory()}", @"Assets\HRData\predicted.txt");
 
     // Start is called before the first frame update
     void Start()
@@ -69,7 +73,8 @@ public class GameController : MonoBehaviour
         CurrentGSR = 600;
 
         // Clear irrelevant data from input file
-        File.WriteAllText(path, String.Empty);
+        File.WriteAllText(dataPath, String.Empty);
+        File.WriteAllText(mlPath, String.Empty);
 
         // Start game in the baseline state to record resting sensor data
         TransitionToState(Baseline);
@@ -80,7 +85,7 @@ public class GameController : MonoBehaviour
     {
         TimeInState += Time.deltaTime;
         // Read sensor data when in complex mode
-        if (CurrentSensorMode == SensorMode.Complex)
+        if (CurrentSensorMode == SensorMode.Complex || CurrentSensorMode == SensorMode.ML)
         {
             TimeInWindow += Time.deltaTime;
 
@@ -179,14 +184,25 @@ public class GameController : MonoBehaviour
 
         try
         {
-            input = File.ReadAllLines(path);
+            input = File.ReadAllLines(dataPath);
 
             // Average all readings from this window
             foreach (string line in input)
             {
                 string[] splitInput = line.Split(sep.ToCharArray());
                 if (float.Parse(splitInput[0]) == -1)
+                {
+                    // If we failed to get a value, but we're using ML predictions
+                    // then we get the latest prediction and exit early
+                    if (CurrentSensorMode == GameController.SensorMode.ML)
+                    { 
+                        Stressed = GetLatestPrediction();
+                        AddToStressHistory(Stressed);
+                        return;
+                    }
+                    // Otherwise, we'll continue with the previous value
                     read_hr += PreviousHR;
+                }
                 else
                     read_hr += float.Parse(splitInput[0]);
                 read_GSR += Double.Parse(splitInput[1]);
@@ -195,7 +211,7 @@ public class GameController : MonoBehaviour
             read_GSR /= input.Length;
 
             // Erase the contents of the input file
-            File.WriteAllText(path, String.Empty);
+            File.WriteAllText(dataPath, String.Empty);
         }
         catch (IOException)
         {
@@ -233,13 +249,27 @@ public class GameController : MonoBehaviour
             else if (CurrentHR / RestingHR <= 1.05)
                 Stressed = false;
         }
+
+        // Add stress detection to history
+        AddToStressHistory(Stressed);
         
-        // Maintain a stress history of length (HistoryDepth)
-        StressHistory.Enqueue(Stressed);
+        Debug.Log("Heart Rate: " + CurrentHR + " BPM | GSR: " + CurrentGSR + " kOhms | Stressed: " + Stressed);
+    }
+
+    // Get our latest ML prediction (ML MODE ONLY)
+    private bool GetLatestPrediction()
+    {
+        string prediction = File.ReadLines(mlPath).Last();
+        return prediction.Contains('1');
+    }
+
+    // Maintain a stress history of length (HistoryDepth)
+    private void AddToStressHistory(bool newEntry)
+    {
+        StressHistory.Enqueue(newEntry);
         if (StressHistory.Count >= HistoryDepth)
         {
             StressHistory.Dequeue();
         }
-        Debug.Log("Heart Rate: " + CurrentHR + " BPM | GSR: " + CurrentGSR + " kOhms | Stressed: " + Stressed);
     }
 }

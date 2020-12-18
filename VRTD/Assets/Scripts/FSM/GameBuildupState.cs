@@ -82,7 +82,7 @@ public class GameBuildupState : GameBaseState
         if (controller.TimeInState > MaxTimeInState)
             return true;
 
-        if (controller.CurrentSensorMode != GameController.SensorMode.Complex)
+        if (controller.CurrentSensorMode != GameController.SensorMode.Complex && controller.CurrentSensorMode != GameController.SensorMode.ML)
             return false;
 
         int stress_count = GetStressCount(controller);

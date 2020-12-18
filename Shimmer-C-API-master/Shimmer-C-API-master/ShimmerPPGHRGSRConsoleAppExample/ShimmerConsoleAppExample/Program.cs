@@ -131,9 +131,9 @@ namespace ShimmerConsoleAppExample
                         System.Console.WriteLine("AccelX: " + datax.Data + " " + datax.Unit + " AccelY: " + datay.Data + " " + datay.Unit + " AccelZ: " + dataz.Data + " " + dataz.Unit);
                         System.Console.WriteLine("Time Stamp: " + dataTS.Data + " " + dataTS.Unit + " GSR: " + dataGSR.Data + " " + dataGSR.Unit + " PPG: " + dataPPG.Data + " " + dataPPG.Unit + " HR: " + heartRate + " BPM");
                         File.AppendAllText(output, txt.ToString());
-                        //File.AppendAllText(csv_output, csv.ToString());
+                        File.AppendAllText(csv_output, csv.ToString());
                         txt.Clear();
-                        //csv.Clear();
+                        csv.Clear();
                     }
                     Count++;
                     break;

@@ -8,7 +8,7 @@ from sklearn.preprocessing import PolynomialFeatures
 from tpot.builtins import StackingEstimator
 
 # load dataset
-url = "Downloads/Stress_classifier_with_AutoML_and_wearable_devices-master/dataset/dataframe_hrv.csv"
+url = "146data.csv"
 dataframe = pd.read_csv(url)
 dataframe = dataframe.reset_index(drop=True)
 # split into input and output elements
@@ -80,7 +80,7 @@ exported_pipeline.fit(X, y)
 
 
 while True:
-    player_data = pd.read_csv("Downloads/Stress_classifier_with_AutoML_and_wearable_devices-master/sampleHR.csv")
+    player_data = pd.read_csv("../HRData/data.csv")
     # make a prediction on a new row of data
     testing_features = player_data[-1:].to_numpy()
     # print("old test:",testing_features)
@@ -93,12 +93,14 @@ while True:
     if last_data == -1:
       temp = player_data['HR'].iloc[[-2,-3,-4,-5]].mean(axis=0)
       player_data['HR'] = player_data['HR'].replace(-1, temp)
-      player_data.to_csv("Downloads/Stress_classifier_with_AutoML_and_wearable_devices-master/sampleHR.csv", index=False)
-      player_data = pd.read_csv("Downloads/Stress_classifier_with_AutoML_and_wearable_devices-master/sampleHR.csv")
+      player_data.to_csv("../HRData/data.csv", index=False)
+      player_data = pd.read_csv("../HRData/data.csv")
       # print(player_data)
       testing_features = player_data[-1:].to_numpy()
       # print("new test:",testing_features)
       prediction = exported_pipeline.predict(testing_features)
+      out_file = open("../HRData/predicted.txt", 'a')
+      out_file.write(prediction[0] + '\n')
       print('Predicted: %.3f' % prediction[0])
     else:
       prediction = exported_pipeline.predict(testing_features)

@@ -26,7 +26,7 @@ public class GameRestState : GameBaseState
         if (controller.TimeInState > MaxTimeInState)
             return true;
 
-        if (controller.CurrentSensorMode != GameController.SensorMode.Complex)
+        if (controller.CurrentSensorMode != GameController.SensorMode.Complex && controller.CurrentSensorMode != GameController.SensorMode.ML)
             return false;
 
         int relax_count = 0;
